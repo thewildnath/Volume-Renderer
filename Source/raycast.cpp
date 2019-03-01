@@ -10,15 +10,6 @@
 namespace scg
 {
 
-float stepSize = 0.5f;
-int stepCount = 500;
-float slice = -76;
-
-float CUTOFF  = 1400;
-std::vector<std::pair<float, glm::vec4>> pieces;
-
-float df = 0.5f;
-
 inline float sampleVolume(scg::Volume const &volume, glm::vec3 const &pos)
 {
     int px = (int)(pos.x - df);
@@ -94,21 +85,19 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
 
     for (int i = 0; i < stepCount && intensity > 0.05f; ++i)
     {
-        glm::vec3 normPos = pos - volumePos;
-
-        if (normPos.x >= 0 + 2 && normPos.x < volume.width - 2 &&
-            normPos.y >= 0 + 2 && normPos.y < volume.height - 2 &&
-            normPos.z >= 0 + 2 && normPos.z < volume.depth - 2 &&
+        if (pos.x >= 0 + 2 && pos.x < volume.width - 2 &&
+            pos.y >= 0 + 2 && pos.y < volume.height - 2 &&
+            pos.z >= 0 + 2 && pos.z < volume.depth - 2 &&
             pos.z > slice)
         {
             //Trilinear
-            float coef = sampleVolume(volume, normPos);
+            float coef = sampleVolume(volume, pos);
 
             glm::vec4 out = piecewise(coef);
 
             if (out.w)
             {
-                glm::vec3 normal = glm::normalize(getNormal(volume, normPos, 0.5f));// + getNormal(volume, normPos, 1.f));
+                glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));// + getNormal(volume, normPos, 1.f));
 
                 float newIntensity = intensity * std::exp(-out.w * stepSize);
 
@@ -123,8 +112,10 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
 
         }
 
-        pos += deltaStep;
+        pos += stepSize;
     }
+
+    return color / total;
 }
 
 }

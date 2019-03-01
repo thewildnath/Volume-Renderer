@@ -21,6 +21,7 @@ add_executable(renderer
         Source/ray.h
         Source/raycast.cpp
         Source/raycast.h
+        Source/settings.h
         Source/triangle.cpp
         Source/triangle.h
         Source/utils.cpp

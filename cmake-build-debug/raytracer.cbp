@@ -108,6 +108,9 @@
 		<Unit filename="C:/Users/natha/Documents/Programing/VolumeRendering/Source/raycast.h">
 			<Option target="renderer"/>
 		</Unit>
+		<Unit filename="C:/Users/natha/Documents/Programing/VolumeRendering/Source/settings.h">
+			<Option target="renderer"/>
+		</Unit>
 		<Unit filename="C:/Users/natha/Documents/Programing/VolumeRendering/Source/triangle.cpp">
 			<Option target="renderer"/>
 		</Unit>
