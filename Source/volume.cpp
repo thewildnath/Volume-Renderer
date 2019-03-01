@@ -1,7 +1,3 @@
-//
-// Created by nathan on 19/02/2019.
-//
-
 #include "volume.h"
 
 #include <utils.h>

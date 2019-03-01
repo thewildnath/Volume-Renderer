@@ -149,6 +149,60 @@ Source/main.cpp.s:
 	$(MAKE) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/Source/main.cpp.s
 .PHONY : Source/main.cpp.s
 
+Source/ray.obj: Source/ray.cpp.obj
+
+.PHONY : Source/ray.obj
+
+# target to build an object file
+Source/ray.cpp.obj:
+	$(MAKE) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/Source/ray.cpp.obj
+.PHONY : Source/ray.cpp.obj
+
+Source/ray.i: Source/ray.cpp.i
+
+.PHONY : Source/ray.i
+
+# target to preprocess a source file
+Source/ray.cpp.i:
+	$(MAKE) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/Source/ray.cpp.i
+.PHONY : Source/ray.cpp.i
+
+Source/ray.s: Source/ray.cpp.s
+
+.PHONY : Source/ray.s
+
+# target to generate assembly for a file
+Source/ray.cpp.s:
+	$(MAKE) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/Source/ray.cpp.s
+.PHONY : Source/ray.cpp.s
+
+Source/raycast.obj: Source/raycast.cpp.obj
+
+.PHONY : Source/raycast.obj
+
+# target to build an object file
+Source/raycast.cpp.obj:
+	$(MAKE) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/Source/raycast.cpp.obj
+.PHONY : Source/raycast.cpp.obj
+
+Source/raycast.i: Source/raycast.cpp.i
+
+.PHONY : Source/raycast.i
+
+# target to preprocess a source file
+Source/raycast.cpp.i:
+	$(MAKE) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/Source/raycast.cpp.i
+.PHONY : Source/raycast.cpp.i
+
+Source/raycast.s: Source/raycast.cpp.s
+
+.PHONY : Source/raycast.s
+
+# target to generate assembly for a file
+Source/raycast.cpp.s:
+	$(MAKE) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/Source/raycast.cpp.s
+.PHONY : Source/raycast.cpp.s
+
 Source/triangle.obj: Source/triangle.cpp.obj
 
 .PHONY : Source/triangle.obj
@@ -269,6 +323,12 @@ help:
 	@echo ... Source/main.obj
 	@echo ... Source/main.i
 	@echo ... Source/main.s
+	@echo ... Source/ray.obj
+	@echo ... Source/ray.i
+	@echo ... Source/ray.s
+	@echo ... Source/raycast.obj
+	@echo ... Source/raycast.i
+	@echo ... Source/raycast.s
 	@echo ... Source/triangle.obj
 	@echo ... Source/triangle.i
 	@echo ... Source/triangle.s

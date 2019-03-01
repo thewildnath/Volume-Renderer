@@ -17,6 +17,10 @@ include_directories(Source)
 add_executable(renderer
         Source/SDLauxiliary.h
         Source/main.cpp
+        Source/ray.cpp
+        Source/ray.h
+        Source/raycast.cpp
+        Source/raycast.h
         Source/triangle.cpp
         Source/triangle.h
         Source/utils.cpp

@@ -96,6 +96,18 @@
 		<Unit filename="C:/Users/natha/Documents/Programing/VolumeRendering/Source/main.cpp">
 			<Option target="renderer"/>
 		</Unit>
+		<Unit filename="C:/Users/natha/Documents/Programing/VolumeRendering/Source/ray.cpp">
+			<Option target="renderer"/>
+		</Unit>
+		<Unit filename="C:/Users/natha/Documents/Programing/VolumeRendering/Source/ray.h">
+			<Option target="renderer"/>
+		</Unit>
+		<Unit filename="C:/Users/natha/Documents/Programing/VolumeRendering/Source/raycast.cpp">
+			<Option target="renderer"/>
+		</Unit>
+		<Unit filename="C:/Users/natha/Documents/Programing/VolumeRendering/Source/raycast.h">
+			<Option target="renderer"/>
+		</Unit>
 		<Unit filename="C:/Users/natha/Documents/Programing/VolumeRendering/Source/triangle.cpp">
 			<Option target="renderer"/>
 		</Unit>

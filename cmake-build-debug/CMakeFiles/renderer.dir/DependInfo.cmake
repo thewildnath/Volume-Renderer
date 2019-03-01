@@ -5,6 +5,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "C:/Users/natha/Documents/Programing/VolumeRendering/Source/main.cpp" "C:/Users/natha/Documents/Programing/VolumeRendering/cmake-build-debug/CMakeFiles/renderer.dir/Source/main.cpp.obj"
+  "C:/Users/natha/Documents/Programing/VolumeRendering/Source/ray.cpp" "C:/Users/natha/Documents/Programing/VolumeRendering/cmake-build-debug/CMakeFiles/renderer.dir/Source/ray.cpp.obj"
+  "C:/Users/natha/Documents/Programing/VolumeRendering/Source/raycast.cpp" "C:/Users/natha/Documents/Programing/VolumeRendering/cmake-build-debug/CMakeFiles/renderer.dir/Source/raycast.cpp.obj"
   "C:/Users/natha/Documents/Programing/VolumeRendering/Source/triangle.cpp" "C:/Users/natha/Documents/Programing/VolumeRendering/cmake-build-debug/CMakeFiles/renderer.dir/Source/triangle.cpp.obj"
   "C:/Users/natha/Documents/Programing/VolumeRendering/Source/utils.cpp" "C:/Users/natha/Documents/Programing/VolumeRendering/cmake-build-debug/CMakeFiles/renderer.dir/Source/utils.cpp.obj"
   "C:/Users/natha/Documents/Programing/VolumeRendering/Source/volume.cpp" "C:/Users/natha/Documents/Programing/VolumeRendering/cmake-build-debug/CMakeFiles/renderer.dir/Source/volume.cpp.obj"

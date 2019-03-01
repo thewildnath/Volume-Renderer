@@ -81,10 +81,60 @@ CMakeFiles/renderer.dir/Source/main.cpp.obj.provides: CMakeFiles/renderer.dir/So
 CMakeFiles/renderer.dir/Source/main.cpp.obj.provides.build: CMakeFiles/renderer.dir/Source/main.cpp.obj
 
 
+CMakeFiles/renderer.dir/Source/ray.cpp.obj: CMakeFiles/renderer.dir/flags.make
+CMakeFiles/renderer.dir/Source/ray.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
+CMakeFiles/renderer.dir/Source/ray.cpp.obj: ../Source/ray.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\natha\Documents\Programing\VolumeRendering\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/renderer.dir/Source/ray.cpp.obj"
+	C:\PROGRA~1\HASKEL~1\802E01~1.1\mingw\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\renderer.dir\Source\ray.cpp.obj -c C:\Users\natha\Documents\Programing\VolumeRendering\Source\ray.cpp
+
+CMakeFiles/renderer.dir/Source/ray.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/renderer.dir/Source/ray.cpp.i"
+	C:\PROGRA~1\HASKEL~1\802E01~1.1\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\natha\Documents\Programing\VolumeRendering\Source\ray.cpp > CMakeFiles\renderer.dir\Source\ray.cpp.i
+
+CMakeFiles/renderer.dir/Source/ray.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/renderer.dir/Source/ray.cpp.s"
+	C:\PROGRA~1\HASKEL~1\802E01~1.1\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\natha\Documents\Programing\VolumeRendering\Source\ray.cpp -o CMakeFiles\renderer.dir\Source\ray.cpp.s
+
+CMakeFiles/renderer.dir/Source/ray.cpp.obj.requires:
+
+.PHONY : CMakeFiles/renderer.dir/Source/ray.cpp.obj.requires
+
+CMakeFiles/renderer.dir/Source/ray.cpp.obj.provides: CMakeFiles/renderer.dir/Source/ray.cpp.obj.requires
+	$(MAKE) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/Source/ray.cpp.obj.provides.build
+.PHONY : CMakeFiles/renderer.dir/Source/ray.cpp.obj.provides
+
+CMakeFiles/renderer.dir/Source/ray.cpp.obj.provides.build: CMakeFiles/renderer.dir/Source/ray.cpp.obj
+
+
+CMakeFiles/renderer.dir/Source/raycast.cpp.obj: CMakeFiles/renderer.dir/flags.make
+CMakeFiles/renderer.dir/Source/raycast.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
+CMakeFiles/renderer.dir/Source/raycast.cpp.obj: ../Source/raycast.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\natha\Documents\Programing\VolumeRendering\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/renderer.dir/Source/raycast.cpp.obj"
+	C:\PROGRA~1\HASKEL~1\802E01~1.1\mingw\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\renderer.dir\Source\raycast.cpp.obj -c C:\Users\natha\Documents\Programing\VolumeRendering\Source\raycast.cpp
+
+CMakeFiles/renderer.dir/Source/raycast.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/renderer.dir/Source/raycast.cpp.i"
+	C:\PROGRA~1\HASKEL~1\802E01~1.1\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\natha\Documents\Programing\VolumeRendering\Source\raycast.cpp > CMakeFiles\renderer.dir\Source\raycast.cpp.i
+
+CMakeFiles/renderer.dir/Source/raycast.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/renderer.dir/Source/raycast.cpp.s"
+	C:\PROGRA~1\HASKEL~1\802E01~1.1\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\natha\Documents\Programing\VolumeRendering\Source\raycast.cpp -o CMakeFiles\renderer.dir\Source\raycast.cpp.s
+
+CMakeFiles/renderer.dir/Source/raycast.cpp.obj.requires:
+
+.PHONY : CMakeFiles/renderer.dir/Source/raycast.cpp.obj.requires
+
+CMakeFiles/renderer.dir/Source/raycast.cpp.obj.provides: CMakeFiles/renderer.dir/Source/raycast.cpp.obj.requires
+	$(MAKE) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/Source/raycast.cpp.obj.provides.build
+.PHONY : CMakeFiles/renderer.dir/Source/raycast.cpp.obj.provides
+
+CMakeFiles/renderer.dir/Source/raycast.cpp.obj.provides.build: CMakeFiles/renderer.dir/Source/raycast.cpp.obj
+
+
 CMakeFiles/renderer.dir/Source/triangle.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/Source/triangle.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/Source/triangle.cpp.obj: ../Source/triangle.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\natha\Documents\Programing\VolumeRendering\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/renderer.dir/Source/triangle.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\natha\Documents\Programing\VolumeRendering\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/renderer.dir/Source/triangle.cpp.obj"
 	C:\PROGRA~1\HASKEL~1\802E01~1.1\mingw\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\renderer.dir\Source\triangle.cpp.obj -c C:\Users\natha\Documents\Programing\VolumeRendering\Source\triangle.cpp
 
 CMakeFiles/renderer.dir/Source/triangle.cpp.i: cmake_force
@@ -109,7 +159,7 @@ CMakeFiles/renderer.dir/Source/triangle.cpp.obj.provides.build: CMakeFiles/rende
 CMakeFiles/renderer.dir/Source/utils.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/Source/utils.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/Source/utils.cpp.obj: ../Source/utils.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\natha\Documents\Programing\VolumeRendering\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/renderer.dir/Source/utils.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\natha\Documents\Programing\VolumeRendering\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/renderer.dir/Source/utils.cpp.obj"
 	C:\PROGRA~1\HASKEL~1\802E01~1.1\mingw\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\renderer.dir\Source\utils.cpp.obj -c C:\Users\natha\Documents\Programing\VolumeRendering\Source\utils.cpp
 
 CMakeFiles/renderer.dir/Source/utils.cpp.i: cmake_force
@@ -134,7 +184,7 @@ CMakeFiles/renderer.dir/Source/utils.cpp.obj.provides.build: CMakeFiles/renderer
 CMakeFiles/renderer.dir/Source/volume.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/Source/volume.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/Source/volume.cpp.obj: ../Source/volume.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\natha\Documents\Programing\VolumeRendering\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/renderer.dir/Source/volume.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\natha\Documents\Programing\VolumeRendering\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/renderer.dir/Source/volume.cpp.obj"
 	C:\PROGRA~1\HASKEL~1\802E01~1.1\mingw\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\renderer.dir\Source\volume.cpp.obj -c C:\Users\natha\Documents\Programing\VolumeRendering\Source\volume.cpp
 
 CMakeFiles/renderer.dir/Source/volume.cpp.i: cmake_force
@@ -159,7 +209,7 @@ CMakeFiles/renderer.dir/Source/volume.cpp.obj.provides.build: CMakeFiles/rendere
 CMakeFiles/renderer.dir/include/tinytiff/tinytiffreader.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/include/tinytiff/tinytiffreader.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/include/tinytiff/tinytiffreader.cpp.obj: ../include/tinytiff/tinytiffreader.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\natha\Documents\Programing\VolumeRendering\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/renderer.dir/include/tinytiff/tinytiffreader.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\natha\Documents\Programing\VolumeRendering\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/renderer.dir/include/tinytiff/tinytiffreader.cpp.obj"
 	C:\PROGRA~1\HASKEL~1\802E01~1.1\mingw\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\renderer.dir\include\tinytiff\tinytiffreader.cpp.obj -c C:\Users\natha\Documents\Programing\VolumeRendering\include\tinytiff\tinytiffreader.cpp
 
 CMakeFiles/renderer.dir/include/tinytiff/tinytiffreader.cpp.i: cmake_force
@@ -184,6 +234,8 @@ CMakeFiles/renderer.dir/include/tinytiff/tinytiffreader.cpp.obj.provides.build: 
 # Object files for target renderer
 renderer_OBJECTS = \
 "CMakeFiles/renderer.dir/Source/main.cpp.obj" \
+"CMakeFiles/renderer.dir/Source/ray.cpp.obj" \
+"CMakeFiles/renderer.dir/Source/raycast.cpp.obj" \
 "CMakeFiles/renderer.dir/Source/triangle.cpp.obj" \
 "CMakeFiles/renderer.dir/Source/utils.cpp.obj" \
 "CMakeFiles/renderer.dir/Source/volume.cpp.obj" \
@@ -193,6 +245,8 @@ renderer_OBJECTS = \
 renderer_EXTERNAL_OBJECTS =
 
 renderer.exe: CMakeFiles/renderer.dir/Source/main.cpp.obj
+renderer.exe: CMakeFiles/renderer.dir/Source/ray.cpp.obj
+renderer.exe: CMakeFiles/renderer.dir/Source/raycast.cpp.obj
 renderer.exe: CMakeFiles/renderer.dir/Source/triangle.cpp.obj
 renderer.exe: CMakeFiles/renderer.dir/Source/utils.cpp.obj
 renderer.exe: CMakeFiles/renderer.dir/Source/volume.cpp.obj
@@ -202,7 +256,7 @@ renderer.exe: ../include/sdl/lib/libSDL2.dll.a
 renderer.exe: CMakeFiles/renderer.dir/linklibs.rsp
 renderer.exe: CMakeFiles/renderer.dir/objects1.rsp
 renderer.exe: CMakeFiles/renderer.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\natha\Documents\Programing\VolumeRendering\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable renderer.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\natha\Documents\Programing\VolumeRendering\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable renderer.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\renderer.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -211,6 +265,8 @@ CMakeFiles/renderer.dir/build: renderer.exe
 .PHONY : CMakeFiles/renderer.dir/build
 
 CMakeFiles/renderer.dir/requires: CMakeFiles/renderer.dir/Source/main.cpp.obj.requires
+CMakeFiles/renderer.dir/requires: CMakeFiles/renderer.dir/Source/ray.cpp.obj.requires
+CMakeFiles/renderer.dir/requires: CMakeFiles/renderer.dir/Source/raycast.cpp.obj.requires
 CMakeFiles/renderer.dir/requires: CMakeFiles/renderer.dir/Source/triangle.cpp.obj.requires
 CMakeFiles/renderer.dir/requires: CMakeFiles/renderer.dir/Source/utils.cpp.obj.requires
 CMakeFiles/renderer.dir/requires: CMakeFiles/renderer.dir/Source/volume.cpp.obj.requires

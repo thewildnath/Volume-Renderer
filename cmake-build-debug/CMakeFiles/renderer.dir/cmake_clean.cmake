@@ -1,5 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/renderer.dir/Source/main.cpp.obj"
+  "CMakeFiles/renderer.dir/Source/ray.cpp.obj"
+  "CMakeFiles/renderer.dir/Source/raycast.cpp.obj"
   "CMakeFiles/renderer.dir/Source/triangle.cpp.obj"
   "CMakeFiles/renderer.dir/Source/utils.cpp.obj"
   "CMakeFiles/renderer.dir/Source/volume.cpp.obj"

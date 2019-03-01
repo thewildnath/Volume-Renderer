@@ -1,3 +1,5 @@
+#include "ray.h"
+#include "raycast.h"
 #include "SDLauxiliary.h"
 #include "triangle.h"
 #include "utils.h"
@@ -125,16 +127,6 @@ inline glm::vec3 getNormal(scg::Volume const &volume, glm::vec3 const &pos, floa
         sampleVolume(volume, pos + deltaZ) - sampleVolume(volume, pos - deltaZ));
 }
 
-inline float transfer(float coef)
-{
-    if (coef > CUTOFF)
-    {
-        return 0.1f;
-    }
-
-    return 0.0f;
-}
-
 inline glm::vec4 piecewise(float coef)
 {
     int index = 0;
@@ -166,12 +158,20 @@ void Draw(screen *screen)
     {
         for (int x = 0; x < SCREEN_WIDTH; ++x)
         {
+            glm::vec3 origin = rotate(glm::vec3(cameraPos), angle);
             glm::vec3 dir(
                 ((float)x - (float)SCREEN_WIDTH / 2) * fovH,
                 ((float)y - (float)SCREEN_HEIGHT / 2) * fovV,
                 focalLength);
             dir = rotate(dir, angle);
 
+            scg::Ray ray(origin, dir);
+
+            glm::vec3 color = scg::castRay(volume, ray);
+
+            PutPixelSDL(screen, x, y, color);
+
+/*
             glm::vec3 deltaStep = glm::normalize(dir) * stepSize;
             glm::vec3 pos(cameraPos);
             pos = rotate(pos, angle);
@@ -217,6 +217,7 @@ void Draw(screen *screen)
 
             PutPixelSDL(screen, x, y, color / (total * 255));
             //PutPixelSDL(screen, x, y, glm::vec3(1 - intensity, 1 - intensity, 1 - intensity));
+//*/
         }
     }
 }
