@@ -9,6 +9,8 @@
 namespace scg
 {
 
+float sampleVolume(scg::Volume const &, glm::vec3 const &);
+
 glm::vec3 castRay(Volume const&, Ray const&);
 
 }

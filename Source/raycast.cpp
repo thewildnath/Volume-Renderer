@@ -1,24 +1,26 @@
 #include "raycast.h"
 
 #include "ray.h"
+#include "settings.h"
 #include "volume.h"
 
 #include <glm/glm.hpp>
 
 #include <algorithm>
+#include <iostream>
 
 namespace scg
 {
 
-inline float sampleVolume(scg::Volume const &volume, glm::vec3 const &pos)
+float sampleVolume(scg::Volume const &volume, glm::vec3 const &pos)
 {
-    int px = (int)(pos.x - df);
-    int py = (int)(pos.y - df);
-    int pz = (int)(pos.z - df);
+    int px = (int)(pos.x - 0.5f);
+    int py = (int)(pos.y - 0.5f);
+    int pz = (int)(pos.z - 0.5f);
 
-    float dx = pos.x - px - df;
-    float dy = pos.y - py - df;
-    float dz = pos.z - pz - df;
+    float dx = pos.x - px - 0.5f;
+    float dy = pos.y - py - 0.5f;
+    float dz = pos.z - pz - 0.5f;
 
     float c000 = volume.data[px][py][pz];
     float c001 = volume.data[px][py][pz + 1];
@@ -58,18 +60,18 @@ inline glm::vec4 piecewise(float coef)
 {
     int index = 0;
 
-    while(pieces[index].first <= coef)
+    while(settings.pieces[index].first <= coef)
         ++index;
     --index;
 
-    float dx = pieces[index + 1].first - pieces[index].first;
-    float dist = (coef - pieces[index].first) / dx;
+    float dx = settings.pieces[index + 1].first - settings.pieces[index].first;
+    float dist = (coef - settings.pieces[index].first) / dx;
 
     glm::vec4 out = glm::vec4(
-        pieces[index].second.x * (1 - dist) + pieces[index + 1].second.x * dist,
-        pieces[index].second.y * (1 - dist) + pieces[index + 1].second.y * dist,
-        pieces[index].second.z * (1 - dist) + pieces[index + 1].second.z * dist,
-        pieces[index].second.w * (1 - dist) + pieces[index + 1].second.w * dist);
+        settings.pieces[index].second.x * (1 - dist) + settings.pieces[index + 1].second.x * dist,
+        settings.pieces[index].second.y * (1 - dist) + settings.pieces[index + 1].second.y * dist,
+        settings.pieces[index].second.z * (1 - dist) + settings.pieces[index + 1].second.z * dist,
+        settings.pieces[index].second.w * (1 - dist) + settings.pieces[index + 1].second.w * dist);
 
     return out;
 }
@@ -79,16 +81,16 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
     float intensity = 1;
     float total = 0;
     glm::vec3 color(0, 0, 0);
-    float prevCoef = 0;
+    //float prevCoef = 0;
 
     glm::vec3 pos(ray.origin);
 
-    for (int i = 0; i < stepCount && intensity > 0.05f; ++i)
+    for (int i = 0; i < settings.stepCount && intensity > 0.05f; ++i)
     {
         if (pos.x >= 0 + 2 && pos.x < volume.width - 2 &&
             pos.y >= 0 + 2 && pos.y < volume.height - 2 &&
             pos.z >= 0 + 2 && pos.z < volume.depth - 2 &&
-            pos.z > slice)
+            pos.z > settings.slice)
         {
             //Trilinear
             float coef = sampleVolume(volume, pos);
@@ -99,12 +101,11 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
             {
                 glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));// + getNormal(volume, normPos, 1.f));
 
-                float newIntensity = intensity * std::exp(-out.w * stepSize);
+                float newIntensity = intensity * std::exp(-out.w * settings.stepSize);
 
-                float light = std::max(glm::dot(normal, lightDir), 0.1f);
-                //color += light * coef;
-                //total += coef;
-                color += light * (intensity - newIntensity) * glm::vec3(out.x, out.y,  out.z);
+                float light = std::max(glm::dot(normal, settings.lightDir), 0.1f);
+
+                color += (intensity - newIntensity) * light * glm::vec3(out.x, out.y,  out.z);
                 total += (intensity - newIntensity);
 
                 intensity = newIntensity;
@@ -112,10 +113,10 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
 
         }
 
-        pos += stepSize;
+        pos += ray.dir * settings.stepSize;
     }
 
-    return color / total;
+    return color / (total * 255);
 }
 
 }

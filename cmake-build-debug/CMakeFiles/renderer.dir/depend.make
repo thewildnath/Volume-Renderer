@@ -130,6 +130,7 @@ CMakeFiles/renderer.dir/Source/main.cpp.obj: ../Source/SDLauxiliary.h
 CMakeFiles/renderer.dir/Source/main.cpp.obj: ../Source/main.cpp
 CMakeFiles/renderer.dir/Source/main.cpp.obj: ../Source/ray.h
 CMakeFiles/renderer.dir/Source/main.cpp.obj: ../Source/raycast.h
+CMakeFiles/renderer.dir/Source/main.cpp.obj: ../Source/settings.h
 CMakeFiles/renderer.dir/Source/main.cpp.obj: ../Source/triangle.h
 CMakeFiles/renderer.dir/Source/main.cpp.obj: ../Source/utils.h
 CMakeFiles/renderer.dir/Source/main.cpp.obj: ../Source/volume.h
@@ -298,6 +299,7 @@ CMakeFiles/renderer.dir/Source/raycast.cpp.obj: ../include/glm/glm/vector_relati
 CMakeFiles/renderer.dir/Source/raycast.cpp.obj: ../Source/ray.h
 CMakeFiles/renderer.dir/Source/raycast.cpp.obj: ../Source/raycast.cpp
 CMakeFiles/renderer.dir/Source/raycast.cpp.obj: ../Source/raycast.h
+CMakeFiles/renderer.dir/Source/raycast.cpp.obj: ../Source/settings.h
 CMakeFiles/renderer.dir/Source/raycast.cpp.obj: ../Source/volume.h
 
 CMakeFiles/renderer.dir/Source/triangle.cpp.obj: ../include/glm/glm/common.hpp

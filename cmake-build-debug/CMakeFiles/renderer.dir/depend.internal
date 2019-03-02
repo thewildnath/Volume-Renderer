@@ -131,6 +131,7 @@ CMakeFiles/renderer.dir/Source/main.cpp.obj
  C:/Users/natha/Documents/Programing/VolumeRendering/Source/main.cpp
  C:/Users/natha/Documents/Programing/VolumeRendering/Source/ray.h
  C:/Users/natha/Documents/Programing/VolumeRendering/Source/raycast.h
+ C:/Users/natha/Documents/Programing/VolumeRendering/Source/settings.h
  C:/Users/natha/Documents/Programing/VolumeRendering/Source/triangle.h
  C:/Users/natha/Documents/Programing/VolumeRendering/Source/utils.h
  C:/Users/natha/Documents/Programing/VolumeRendering/Source/volume.h
@@ -299,6 +300,7 @@ CMakeFiles/renderer.dir/Source/raycast.cpp.obj
  C:/Users/natha/Documents/Programing/VolumeRendering/Source/ray.h
  C:/Users/natha/Documents/Programing/VolumeRendering/Source/raycast.cpp
  C:/Users/natha/Documents/Programing/VolumeRendering/Source/raycast.h
+ C:/Users/natha/Documents/Programing/VolumeRendering/Source/settings.h
  C:/Users/natha/Documents/Programing/VolumeRendering/Source/volume.h
 CMakeFiles/renderer.dir/Source/triangle.cpp.obj
  ../include/glm/glm/common.hpp

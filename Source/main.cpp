@@ -15,7 +15,6 @@
 #include <cstdint>
 #include <fstream>
 #include <vector>
-#include <c++/5.2.0/bits/shared_ptr.h>
 
 #define SCREEN_WIDTH 250
 #define SCREEN_HEIGHT 250
@@ -41,13 +40,19 @@ glm::vec3 volumePos(-126, -126, -75);
 scg::Volume volume(256, 256, 256);
 scg::Volume temp(256, 256, 256);
 
-std::shared_ptr<scg::Settings> settings;
+scg::Settings scg::settings;
 
 int main(int argc, char *argv[])
 {
     screen *screen = InitializeSDL(SCREEN_WIDTH, SCREEN_HEIGHT, FULLSCREEN_MODE);
 
-    
+    scg::settings.stepSize = 0.5f;
+    scg::settings.stepCount =  500;
+
+    scg::settings.lightDir = glm::vec3(0.75f, 0, 0.75f);
+
+    scg::settings.slice = 0;
+    scg::settings.df = 0.5f;
 
     loadPiecewise();
     loadBrain(volume);
@@ -148,10 +153,10 @@ bool Update()
                     angle += 5;
                     break;
                 case SDLK_LEFTBRACKET:
-                    slice += 2;
+                    scg::settings.slice += 2;
                     break;
                 case SDLK_RIGHTBRACKET:
-                    slice -= 2;
+                    scg::settings.slice -= 2;
                     break;
                 case SDLK_r:
                     loadPiecewise();
@@ -170,12 +175,12 @@ void loadPiecewise()
     std::ifstream fin;
     fin.open("transfer.txt");
 
-    pieces.clear();
+    scg::settings.pieces.clear();
     float x, a, r, g, b;
 
     while(fin >> x >> a >> r >> g >> b)
     {
-        pieces.push_back(std::make_pair(x, glm::vec4(r, g, b, a)));
+        scg::settings.pieces.push_back(std::make_pair(x, glm::vec4(r, g, b, a)));
     }
 }
 
@@ -219,10 +224,7 @@ void loadBrain(scg::Volume& volume)
         {
             for (int z = 0; z < volume.height; ++z)
             {
-                //std::cout << x << " " << y << " " << z << " " << y * width + z << std::endl;
-                //volume.data[z][y][x] = (temp.data[z][y][(int)round(x / 1.3f + 0.5f)] + temp.data[z][y][(int)round(x / 1.3f - 0.5f)]) / 2;
-                //volume.data[z][y][x] = temp.data[z][y][x];
-                volume.data[z][y][x] = sampleVolume(temp, glm::vec3(z, y, x / 1.3f));
+                volume.data[z][y][x] = (int)std::round(scg::sampleVolume(temp, glm::vec3(z, y, x / 1.3f)));
             }
         }
     }

@@ -22,6 +22,8 @@ public:
     std::vector<std::pair<float, glm::vec4>> pieces;
 };
 
+extern Settings settings;
+
 }
 
 #endif //RAYTRACER_SETTINGS_H
