@@ -405,7 +405,7 @@ typedef khronos_ssize_t  GLsizeiptr;
 #define GL_IMPLEMENTATION_COLOR_READ_TYPE   0x8B9A
 #define GL_IMPLEMENTATION_COLOR_READ_FORMAT 0x8B9B
 
-/* Shader Source */
+/* Shader source */
 #define GL_COMPILE_STATUS                 0x8B81
 #define GL_INFO_LOG_LENGTH                0x8B84
 #define GL_SHADER_SOURCE_LENGTH           0x8B88

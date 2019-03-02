@@ -1,3 +1,0 @@
-C:/Users/natha/Documents/Programing/VolumeRendering/cmake-build-debug/CMakeFiles/renderer.dir
-C:/Users/natha/Documents/Programing/VolumeRendering/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/natha/Documents/Programing/VolumeRendering/cmake-build-debug/CMakeFiles/rebuild_cache.dir

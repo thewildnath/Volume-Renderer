@@ -1,7 +1,3 @@
-//
-// Created by nathan on 19/02/2019.
-//
-
 #ifndef RAYTRACER_VOLUME_H
 #define RAYTRACER_VOLUME_H
 

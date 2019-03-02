@@ -12,17 +12,22 @@ set(CMAKE_CXX_FLAGS "-Ofast -Wall -Wextra -fopenmp -march=native -ffast-math")
 include_directories(include/glm)
 include_directories(include/sdl/include/SDL2)
 include_directories(include/tinytiff)
-include_directories(Source)
+include_directories(source)
 
 add_executable(renderer
-        Source/SDLauxiliary.h
-        Source/main.cpp
-        Source/triangle.cpp
-        Source/triangle.h
-        Source/utils.cpp
-        Source/utils.h
-        Source/volume.cpp
-        Source/volume.h
+        source/SDLauxiliary.h
+        source/main.cpp
+        source/ray.cpp
+        source/ray.h
+        source/raycast.cpp
+        source/raycast.h
+        source/settings.h
+        source/triangle.cpp
+        source/triangle.h
+        source/utils.cpp
+        source/utils.h
+        source/volume.cpp
+        source/volume.h
         include/tinytiff/tinytiffreader.h
         include/tinytiff/tinytiffreader.cpp)
 
