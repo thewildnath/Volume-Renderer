@@ -2,7 +2,6 @@
 #include "raycast.h"
 #include "SDLauxiliary.h"
 #include "settings.h"
-#include "triangle.h"
 #include "utils.h"
 #include "volume.h"
 

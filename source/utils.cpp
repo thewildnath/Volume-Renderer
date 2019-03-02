@@ -1,7 +1,5 @@
 #include "utils.h"
 
-#include "triangle.h"
-
 #include <vector>
 
 namespace scg

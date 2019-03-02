@@ -22,14 +22,12 @@ add_executable(renderer
         source/raycast.cpp
         source/raycast.h
         source/settings.h
-        source/triangle.cpp
-        source/triangle.h
         source/utils.cpp
         source/utils.h
         source/volume.cpp
         source/volume.h
-        include/tinytiff/tinytiffreader.h
-        include/tinytiff/tinytiffreader.cpp)
+        include/tinytiff/tinytiffreader.cpp
+        include/tinytiff/tinytiffreader.h)
 
 find_library(SDL_LIB libsdl2 HINTS include/sdl/lib)
 target_link_libraries(renderer PUBLIC ${SDL_LIB})

@@ -1,8 +1,6 @@
 #ifndef COMS30115_UTILITY_H
 #define COMS30115_UTILITY_H
 
-#include "triangle.h"
-
 #include <glm/glm.hpp>
 
 #include <vector>
