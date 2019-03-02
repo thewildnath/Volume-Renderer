@@ -186,7 +186,7 @@ void loadPiecewise()
 
 void loadBrain(scg::Volume& volume)
 {
-    char filename[50] = "../Data/StanfordBrain/mrbrain-16bit000.tif";
+    char filename[50] = "../data/StanfordBrain/mrbrain-16bit000.tif";
     for (int x = 0; x < 99; ++x)
     {
         sprintf(filename + 35, "%03d.tif", x + 1);
