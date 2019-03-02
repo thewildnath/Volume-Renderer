@@ -81,7 +81,6 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
     float intensity = 1;
     float total = 0;
     glm::vec3 color(0, 0, 0);
-    //float prevCoef = 0;
 
     glm::vec3 pos(ray.origin);
 
@@ -110,7 +109,6 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
 
                 intensity = newIntensity;
             }
-
         }
 
         pos += ray.dir * settings.stepSize;
