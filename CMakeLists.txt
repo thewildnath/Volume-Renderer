@@ -15,12 +15,14 @@ include_directories(include/tinytiff)
 include_directories(source)
 
 add_executable(renderer
-        source/SDLauxiliary.h
+        source/boundingbox.cpp
+        source/boundingbox.h
         source/main.cpp
         source/ray.cpp
         source/ray.h
         source/raycast.cpp
         source/raycast.h
+        source/SDLauxiliary.h
         source/settings.h
         source/utils.cpp
         source/utils.h

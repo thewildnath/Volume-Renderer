@@ -2,6 +2,7 @@
 #define RAYTRACER_SETTINGS_H
 
 #include <glm/glm.hpp>
+
 #include <utility>
 #include <vector>
 

@@ -1,9 +1,9 @@
-#include "ray.h"
-#include "raycast.h"
-#include "SDLauxiliary.h"
-#include "settings.h"
-#include "utils.h"
-#include "volume.h"
+#include <ray.h>
+#include <raycast.h>
+#include <SDLauxiliary.h>
+#include <settings.h>
+#include <utils.h>
+#include <volume.h>
 
 #include <glm/glm.hpp>
 #include <tinytiffreader.h>

@@ -1,4 +1,4 @@
-#include "Ray.h"
+#include <ray.h>
 
 namespace scg
 {

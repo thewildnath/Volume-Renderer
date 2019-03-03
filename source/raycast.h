@@ -1,8 +1,8 @@
 #ifndef RAYTRACER_RAYMARCH_H
 #define RAYTRACER_RAYMARCH_H
 
-#include "ray.h"
-#include "volume.h"
+#include <ray.h>
+#include <volume.h>
 
 #include <glm/glm.hpp>
 
