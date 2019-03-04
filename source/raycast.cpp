@@ -63,6 +63,7 @@ inline glm::vec3 getNormal(scg::Volume const &volume, glm::vec3 const &pos, floa
 
 inline glm::vec4 piecewise(float coef)
 {
+    //return coef > 1300 ? glm::vec4(255,255,255,1) : glm::vec4(0,0,0,0);
     int index = 0;
 
     while(settings.pieces[index].first <= coef)
@@ -80,10 +81,21 @@ inline glm::vec4 piecewise(float coef)
 
     return out;
 }
+/*
+float getStepSize(float alpha)
+{
+    //return 0.1f;
+    return 0.1f * (1 - alpha) + 1.0f * alpha;
+}*/
+
+std::vector<std::pair<float, float>> stepSizes = {
+    std::make_pair(0.0f, 1.0f),
+    std::make_pair(0.3f, 0.5f),
+    std::make_pair(1.0f, 0.1f)};
 
 glm::vec3 castRay(Volume const& volume, Ray const& ray)
 {
-    glm::vec3 pos;
+    //glm::vec3 pos;
     glm::vec3 color(0, 0, 0);
     float intensity = 1;
     float total = 0;
@@ -99,41 +111,34 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
     float minT = std::max(ray.minT, intersection.nearT);
     float maxT = std::min(ray.maxT, intersection.farT);
 
+    float stepSize = settings.stepSize;
+
     while (intensity > 0.1f)
     {
-        minT += settings.stepSize;
-
         if (minT > maxT)
             break;
 
-        pos = ray.origin + ray.dir * minT;
+        glm::vec3 pos = ray.origin + ray.dir * minT;
 
-        /*if (pos.x >= 0 + 2 && pos.x < volume.width - 2 &&
-            pos.y >= 0 + 2 && pos.y < volume.height - 2 &&
-            pos.z >= 0 + 2 && pos.z < volume.depth - 2 &&
-            pos.z > settings.slice)*/
+        float coef = sampleVolume(volume, pos);
+
+        glm::vec4 out = piecewise(coef);
+
+        if (out.w)
         {
-            //Trilinear
-            float coef = sampleVolume(volume, pos);
+            glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));// + getNormal(volume, normPos, 1.f));
 
-            glm::vec4 out = piecewise(coef);
+            float newIntensity = intensity * std::exp(-out.w * stepSize);
 
-            if (out.w)
-            {
-                glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));// + getNormal(volume, normPos, 1.f));
+            float light = std::max(glm::dot(normal, settings.lightDir), 0.1f);
 
-                float newIntensity = intensity * std::exp(-out.w * settings.stepSize);
+            color += (intensity - newIntensity) * light * glm::vec3(out.x, out.y,  out.z);
+            total += (intensity - newIntensity);
 
-                float light = std::max(glm::dot(normal, settings.lightDir), 0.1f);
-
-                color += (intensity - newIntensity) * light * glm::vec3(out.x, out.y,  out.z);
-                total += (intensity - newIntensity);
-
-                intensity = newIntensity;
-            }
+            intensity = newIntensity;
         }
 
-        pos += ray.dir * settings.stepSize;
+        minT += stepSize;
     }
 
     return color / (total * 255);

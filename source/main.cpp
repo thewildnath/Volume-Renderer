@@ -15,8 +15,8 @@
 #include <fstream>
 #include <vector>
 
-#define SCREEN_WIDTH 250
-#define SCREEN_HEIGHT 250
+#define SCREEN_WIDTH 500
+#define SCREEN_HEIGHT 500
 #define FULLSCREEN_MODE true
 
 #undef main // Bloody hell, hope it doesn't come back and haunt me
