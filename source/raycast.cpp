@@ -1,6 +1,7 @@
 #include <raycast.h>
 
 #include <boundingbox.h>
+#include <octree.h>
 #include <ray.h>
 #include <settings.h>
 #include <volume.h>
@@ -13,9 +14,11 @@
 namespace scg
 {
 
-BoundingBox box{
+BoundingBox box(
     glm::vec3(126, 126, 75) - glm::vec3(1.0f) * 50.0f,
-    glm::vec3(126, 126, 75) + glm::vec3(1.0f) * 50.0f};
+    glm::vec3(126, 126, 75) + glm::vec3(1.0f) * 50.0f);
+
+Octree octree(box, 0);
 
 float sampleVolume(scg::Volume const &volume, glm::vec3 const &pos)
 {

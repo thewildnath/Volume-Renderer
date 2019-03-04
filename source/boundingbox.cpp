@@ -5,7 +5,14 @@
 namespace scg
 {
 
-void BoundingBox::getIntersection(Ray const& ray, Intersection &intersection)
+BoundingBox::BoundingBox(glm::vec3 const& min, glm::vec3 const& max)
+{
+    this->min = min;
+    this->max = max;
+    this->mid = (min + max) / 2.0f;
+}
+
+void BoundingBox::getIntersection(Ray const& ray, Intersection &intersection) const
 {
     glm::vec3 invR		= glm::vec3(1.0f) / ray.dir;
     glm::vec3 bottomT	= invR * (this->min - ray.origin);

@@ -8,7 +8,6 @@
 namespace scg
 {
 
-
 class Intersection
 {
 public:
@@ -64,8 +63,13 @@ class BoundingBox
 public:
     glm::vec3 min;
     glm::vec3 max;
+    glm::vec3 mid;
 
-    void getIntersection(Ray const& ray, Intersection &);
+    BoundingBox() {};
+
+    BoundingBox(glm::vec3 const&, glm::vec3 const&);
+
+    void getIntersection(Ray const& ray, Intersection &) const;
 };
 
 }
