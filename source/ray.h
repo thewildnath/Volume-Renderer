@@ -12,7 +12,12 @@ public:
     glm::vec3 origin;
     glm::vec3 dir;
 
+    float minT;
+    float maxT;
+
     Ray(glm::vec3 const&, glm::vec3 const&);
+
+    Ray(glm::vec3 const&, glm::vec3 const&, float, float);
 };
 
 }

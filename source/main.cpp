@@ -39,6 +39,7 @@ glm::vec3 volumePos(-126, -126, -75);
 scg::Volume volume(256, 256, 256);
 scg::Volume temp(256, 256, 256);
 
+// Extern
 scg::Settings scg::settings;
 
 int main(int argc, char *argv[])
@@ -98,7 +99,7 @@ void Draw(screen *screen)
                 focalLength);
             dir = rotate(dir, angle);
 
-            scg::Ray ray(origin, dir);
+            scg::Ray ray(origin, dir, 0, 500);//scg::settings.stepSize * scg::settings.stepCount);
 
             glm::vec3 color = scg::castRay(volume, ray);
 

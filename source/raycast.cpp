@@ -1,5 +1,6 @@
 #include <raycast.h>
 
+#include <boundingbox.h>
 #include <ray.h>
 #include <settings.h>
 #include <volume.h>
@@ -11,6 +12,10 @@
 
 namespace scg
 {
+
+BoundingBox box{
+    glm::vec3(126, 126, 75) - glm::vec3(1.0f) * 50.0f,
+    glm::vec3(126, 126, 75) + glm::vec3(1.0f) * 50.0f};
 
 float sampleVolume(scg::Volume const &volume, glm::vec3 const &pos)
 {
@@ -78,18 +83,35 @@ inline glm::vec4 piecewise(float coef)
 
 glm::vec3 castRay(Volume const& volume, Ray const& ray)
 {
+    glm::vec3 pos;
+    glm::vec3 color(0, 0, 0);
     float intensity = 1;
     float total = 0;
-    glm::vec3 color(0, 0, 0);
 
-    glm::vec3 pos(ray.origin);
+    Intersection intersection;
+    box.getIntersection(ray, intersection);
 
-    for (int i = 0; i < settings.stepCount && intensity > 0.05f; ++i)
+    if (!intersection.valid)
     {
-        if (pos.x >= 0 + 2 && pos.x < volume.width - 2 &&
+        return color;
+    }
+
+    float minT = std::max(ray.minT, intersection.nearT);
+    float maxT = std::min(ray.maxT, intersection.farT);
+
+    while (intensity > 0.1f)
+    {
+        minT += settings.stepSize;
+
+        if (minT > maxT)
+            break;
+
+        pos = ray.origin + ray.dir * minT;
+
+        /*if (pos.x >= 0 + 2 && pos.x < volume.width - 2 &&
             pos.y >= 0 + 2 && pos.y < volume.height - 2 &&
             pos.z >= 0 + 2 && pos.z < volume.depth - 2 &&
-            pos.z > settings.slice)
+            pos.z > settings.slice)*/
         {
             //Trilinear
             float coef = sampleVolume(volume, pos);
