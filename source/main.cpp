@@ -15,7 +15,7 @@
 #include <fstream>
 #include <vector>
 
-#define RES 250
+#define RES 500
 
 #define SCREEN_WIDTH RES
 #define SCREEN_HEIGHT RES
@@ -41,6 +41,8 @@ glm::vec3 volumePos(-126, -126, -75);
 scg::Volume volume(256, 256, 256);
 scg::Volume temp(256, 256, 256);
 
+bool useOctree = true;
+
 // Extern
 scg::Settings scg::settings;
 
@@ -48,13 +50,14 @@ int main(int argc, char *argv[])
 {
     screen *screen = InitializeSDL(SCREEN_WIDTH, SCREEN_HEIGHT, FULLSCREEN_MODE);
 
-    scg::settings.stepSize = 0.5f;
-    scg::settings.stepCount =  500;
-
     scg::settings.lightDir = glm::vec3(0.75f, 0, 0.75f);
 
-    scg::settings.slice = 0;
+    scg::settings.stepSize = 0.5f;
     scg::settings.df = 0.5f;
+
+    scg::settings.slice = 0;
+
+    scg::settings.octreeLevels = 5;
 
     loadPiecewise();
     loadBrain(volume);
@@ -103,7 +106,7 @@ void Draw(screen *screen)
 
             scg::Ray ray(origin, dir, 0, 500);
 
-            glm::vec3 color = scg::castRayFast(volume, ray);
+            glm::vec3 color = useOctree? scg::castRayFast(volume, ray) : scg::castRay(volume, ray);
 
             PutPixelSDL(screen, x, y, color);
         }
@@ -166,6 +169,9 @@ bool Update()
                     break;
                 case SDLK_r:
                     loadPiecewise();
+                    break;
+                case SDLK_o:
+                    useOctree = !useOctree;
                     break;
                 case SDLK_ESCAPE:
                     /* Move camera quit */
@@ -234,6 +240,8 @@ void loadBrain(scg::Volume& volume)
             }
         }
     }
+
+    buildOctree(volume, volume.octree, scg::settings.octreeLevels);
 
     std::cout << "done" << std::endl;
 }

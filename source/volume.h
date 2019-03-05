@@ -25,6 +25,8 @@ public:
     Volume(int height, int width, int depth);
 };
 
+void buildOctree(Volume const& volume, Octree &octree, int levels);
+
 }
 
 #endif //RAYTRACER_VOLUME_H

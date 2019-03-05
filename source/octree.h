@@ -14,9 +14,11 @@ public:
     bool isLeaf;
     bool isEmpty;
 
-    Octree() {};
+    int mask; // Mask for buckets inside
 
-    Octree(BoundingBox const&, int levels, bool);
+    Octree() = default;
+
+    Octree(BoundingBox const&);
 };
 
 }
