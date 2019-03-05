@@ -10,15 +10,10 @@
 
 #include <algorithm>
 #include <iostream>
+#include <stack>
 
 namespace scg
 {
-
-BoundingBox box(
-    glm::vec3(126, 126, 75) - glm::vec3(1.0f) * 50.0f,
-    glm::vec3(126, 126, 75) + glm::vec3(1.0f) * 50.0f);
-
-Octree octree(box, 0);
 
 float sampleVolume(scg::Volume const &volume, glm::vec3 const &pos)
 {
@@ -104,7 +99,7 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
     float total = 0;
 
     Intersection intersection;
-    box.getIntersection(ray, intersection);
+    volume.octree.bb.getIntersection(ray, intersection);
 
     if (!intersection.valid)
     {
@@ -144,6 +139,111 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
         minT += stepSize;
     }
 
+    return color / (total * 255);
+}
+
+float dT = 0.01f;
+
+glm::vec3 castRayFast(Volume const& volume, Ray ray)
+{
+    //glm::vec3 pos;
+    glm::vec3 color(0, 0, 0);
+    float intensity = 1;
+    float total = 0;
+
+    float stepSize = settings.stepSize;
+
+    Intersection intersection;
+
+    std::stack<Octree const*> st;
+    st.push(&volume.octree);
+
+    //std::cout << ray.origin.z << std::endl;
+
+    while (!st.empty() && intensity > 0.1f && ray.minT <= ray.maxT)
+    {
+        Octree const* node = st.top();
+        st.pop();
+
+        // Try to intersect the node
+        node->bb.getIntersection(ray, intersection);
+        if (!intersection.valid)
+        {
+            // TODO: Possibly slow
+            // Should have hit but was probably on a corner, advance the ray slightly to skip this node
+            ray.minT = ray.minT + dT;
+            continue;
+        }
+
+        float minT = std::max(ray.minT, intersection.nearT);
+        float maxT = std::min(ray.maxT, intersection.farT);
+
+        // Skip
+        if (node->isEmpty)
+        {
+            // Jump into next node
+            ray.minT = maxT + dT;
+            continue;
+        }
+
+        // Continue 'recursively'
+        if (!node->isLeaf)
+        {
+            ray.minT = minT;
+
+            //var planes = BoundingBox.MidPlanes;
+            glm::vec3 mid = node->bb.mid;
+            glm::vec3 entry = ray(minT);
+            glm::vec3 dist = entry - mid;
+            //glm::vec3 dist = ray(minT) - node->bb.mid;
+
+            bool sideX = dist.x >= 0;
+            bool sideY = dist.y >= 0;
+            bool sideZ = dist.z >= 0;
+
+            int id = (sideX << 2) | (sideY << 1) | (sideZ);
+
+            st.push(node);
+            st.push(node->nodes[id]);
+
+            continue;
+        }
+
+        // Cast ray inside node
+        while (intensity > 0.1f)
+        {
+            if (minT > maxT)
+                break;
+
+            glm::vec3 pos = ray(minT);
+
+            float coef = sampleVolume(volume, pos);
+
+            glm::vec4 out = piecewise(coef);
+
+            if (out.w)
+            {
+                glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));// + getNormal(volume, normPos, 1.f));
+
+                float newIntensity = intensity * std::exp(-out.w * stepSize);
+
+                float light = std::max(glm::dot(normal, settings.lightDir), 0.1f);
+
+                color += (intensity - newIntensity) * light * glm::vec3(out.x, out.y,  out.z);
+                total += (intensity - newIntensity);
+
+                intensity = newIntensity;
+            }
+
+            minT += stepSize;
+        }
+
+        // Jump into next node
+        ray.minT = maxT + dT;
+    }
+
+    if (total == 0)
+        return color;
     return color / (total * 255);
 }
 

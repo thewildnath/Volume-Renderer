@@ -15,9 +15,11 @@
 #include <fstream>
 #include <vector>
 
-#define SCREEN_WIDTH 250
-#define SCREEN_HEIGHT 250
-#define FULLSCREEN_MODE true
+#define RES 250
+
+#define SCREEN_WIDTH RES
+#define SCREEN_HEIGHT RES
+#define FULLSCREEN_MODE false
 
 #undef main // Bloody hell, hope it doesn't come back and haunt me
 
@@ -28,7 +30,7 @@ void Draw(screen *screen);
 void loadPiecewise();
 void loadBrain(scg::Volume& volume);
 
-int focalLength = 250;
+int focalLength = RES;
 float fovH = 1;
 float fovV = 1;
 
@@ -94,14 +96,14 @@ void Draw(screen *screen)
         {
             glm::vec3 origin = rotate(glm::vec3(cameraPos), angle) - volumePos;
             glm::vec3 dir(
-                ((float)x - (float)SCREEN_WIDTH / 2) * fovH,
-                ((float)y - (float)SCREEN_HEIGHT / 2) * fovV,
+                ((float)x - (float)(SCREEN_WIDTH - 1) / 2) * fovH,
+                ((float)y - (float)(SCREEN_HEIGHT - 1) / 2) * fovV,
                 focalLength);
             dir = rotate(dir, angle);
 
-            scg::Ray ray(origin, dir, 0, 500);//scg::settings.stepSize * scg::settings.stepCount);
+            scg::Ray ray(origin, dir, 0, 500);
 
-            glm::vec3 color = scg::castRay(volume, ray);
+            glm::vec3 color = scg::castRayFast(volume, ray);
 
             PutPixelSDL(screen, x, y, color);
         }
@@ -148,9 +150,13 @@ bool Update()
                     break;
                 case SDLK_LEFT:
                     angle -= 5;
+                    if (angle < 0)
+                        angle += 360;
                     break;
                 case SDLK_RIGHT:
                     angle += 5;
+                    if (angle > 360)
+                        angle -= 360;
                     break;
                 case SDLK_LEFTBRACKET:
                     scg::settings.slice += 2;

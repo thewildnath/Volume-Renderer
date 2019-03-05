@@ -5,6 +5,7 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <stdint.h>
+#include <cstring>
 
 typedef struct{
     SDL_Window *window;

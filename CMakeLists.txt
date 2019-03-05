@@ -7,8 +7,6 @@ set(CMAKE_CXX_FLAGS "-Ofast -Wall -Wextra -fopenmp -march=native -ffast-math")
 #SET(LINK_FLAGS "-lmingw32 -lSDLmain -lSDL -mwindows")
 #SET(CMAKE_EXE_LINKER_FLAGS "${LINK_FLAGS}")
 
-#set(ENV{OMP_NUM_THREADS} 1)
-
 include_directories(include/glm)
 include_directories(include/sdl/include/SDL2)
 include_directories(include/tinytiff)

@@ -12,8 +12,11 @@ public:
     BoundingBox bb;
     Octree* nodes[8];
     bool isLeaf;
+    bool isEmpty;
 
-    Octree(BoundingBox const&, int levels);
+    Octree() {};
+
+    Octree(BoundingBox const&, int levels, bool);
 };
 
 }

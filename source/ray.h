@@ -18,6 +18,11 @@ public:
     Ray(glm::vec3 const&, glm::vec3 const&);
 
     Ray(glm::vec3 const&, glm::vec3 const&, float, float);
+
+    glm::vec3 operator()(float t) const
+    {
+        return this->origin + this->dir * t;
+    }
 };
 
 }
