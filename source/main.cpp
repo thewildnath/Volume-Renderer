@@ -15,11 +15,11 @@
 #include <fstream>
 #include <vector>
 
-#define RES 500
+#define RES 300
 
 #define SCREEN_WIDTH RES
 #define SCREEN_HEIGHT RES
-#define FULLSCREEN_MODE false
+#define FULLSCREEN_MODE true
 
 #undef main // Bloody hell, hope it doesn't come back and haunt me
 
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 
     scg::settings.slice = 0;
 
-    scg::settings.octreeLevels = 5;
+    scg::settings.octreeLevels = 4;
 
     loadPiecewise();
     loadBrain(volume);

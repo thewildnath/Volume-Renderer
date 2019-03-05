@@ -142,7 +142,7 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
     return color / (total * 255);
 }
 
-float dT = 0.01f;
+float dT = 0.01;
 
 glm::vec3 castRayFast(Volume const& volume, Ray ray)
 {
@@ -155,15 +155,14 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
 
     Intersection intersection;
 
-    std::stack<Octree const*> st;
-    st.push(&volume.octree);
-
-    //std::cout << ray.origin.z << std::endl;
+    std::stack<std::pair<Octree const*, int>> st;
+    st.push(std::make_pair(&volume.octree, -1));
 
     while (!st.empty() && intensity > 0.1f && ray.minT <= ray.maxT)
     {
-        Octree const* node = st.top();
-        st.pop();
+        Octree const* node = st.top().first;
+        int prevID = st.top().second;
+        //st.pop();
 
         // Try to intersect the node
         node->bb.getIntersection(ray, intersection);
@@ -171,7 +170,8 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
         {
             // TODO: Possibly slow
             // Should have hit but was probably on a corner, advance the ray slightly to skip this node
-            ray.minT = ray.minT + dT;
+            //ray.minT = ray.minT + dT;
+            st.pop();
             continue;
         }
 
@@ -183,6 +183,7 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
         {
             // Jump into next node
             ray.minT = maxT + dT;
+            st.pop();
             continue;
         }
 
@@ -203,8 +204,16 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
 
             int id = (sideX << 2) | (sideY << 1) | (sideZ);
 
-            st.push(node);
-            st.push(node->nodes[id]);
+            // We need to jump over
+            if (id == prevID)
+            {
+                ray.minT = maxT + dT;
+                continue;
+            }
+
+            //st.push(std::make_pair(node, id));
+            st.top().second = id;
+            st.push(std::make_pair(node->nodes[id], -1));
 
             continue;
         }
@@ -239,7 +248,9 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
         }
 
         // Jump into next node
-        ray.minT = maxT + dT;
+        //ray.minT = maxT + dT;
+        ray.minT = minT;
+        st.pop();
     }
 
     if (total == 0)
