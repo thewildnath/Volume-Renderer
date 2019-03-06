@@ -144,6 +144,151 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
 
 float dT = 0.01;
 
+struct State
+{
+    Octree const* node;
+    float minT;
+    float maxT;
+    bool checked; // Has nodeMask been calculated?
+    int nodesMask; // Intersection with child nodes
+
+    State() = default;
+
+    State(Octree const* node, float minT, float maxT)
+    {
+        this->node = node;
+        this->minT = minT;
+        this->maxT = maxT;
+        this->checked = false;
+        this->nodesMask = 0;
+    }
+};
+
+//*
+glm::vec3 castRayFaster(Volume const& volume, Ray ray)
+{
+    //glm::vec3 pos;
+    glm::vec3 color(0, 0, 0);
+    float intensity = 1;
+    float total = 0;
+
+    float stepSize = settings.stepSize;
+
+    std::stack<State> st;
+
+    Intersection intersection;
+    volume.octree.bb.getIntersection(ray, intersection);
+    if (intersection.valid)
+    {
+        st.push(State(&volume.octree, intersection.nearT, intersection.farT));
+    }
+
+    while (!st.empty() && intensity > 0.1f && ray.minT <= ray.maxT)
+    {
+        State &state = st.top();
+        Octree const* node = state.node;
+
+        float minT = std::max(ray.minT, state.minT);
+        float maxT = std::min(ray.maxT, state.maxT);
+
+        // Ray was moved by a previous node
+        if (minT > maxT)
+        {
+            st.pop();
+            continue;
+        }
+
+        // Skip
+        if (node->isEmpty)
+        {
+            // Jump into next node
+            ray.minT = maxT + dT;
+            st.pop();
+            continue;
+        }
+
+        // Continue 'recursively'
+        if (!node->isLeaf)
+        {
+            // Find first child
+            //int count = 0;
+            //while(count < 8)
+            {
+                glm::vec3 mid = node->bb.mid;
+                glm::vec3 entry = ray(minT);
+                glm::vec3 dist = entry - mid;
+
+                bool sideX = dist.x >= 0;
+                bool sideY = dist.y >= 0;
+                bool sideZ = dist.z >= 0;
+
+                int id = (sideX << 2) | (sideY << 1) | (sideZ);
+
+                // We need to jump over
+                if (state.nodesMask & (1 << id))
+                {
+                    ray.minT = minT + dT;
+                    continue;
+                }
+
+                node->nodes[id]->bb.getIntersection(ray, intersection);
+                state.nodesMask &= (1 << id);
+
+                // We need to jump over
+                if (!intersection.valid)
+                {
+                    ray.minT = minT + dT;
+                    continue;
+                }
+
+                st.push(State(node->nodes[id], intersection.nearT, intersection.farT));
+            }
+
+            continue;
+        }
+
+        // Cast ray inside node
+        while (intensity > 0.1f)
+        {
+            if (minT > maxT)
+                break;
+
+            glm::vec3 pos = ray(minT);
+
+            float coef = sampleVolume(volume, pos);
+
+            glm::vec4 out = piecewise(coef);
+
+            if (out.w)
+            {
+                glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));// + getNormal(volume, normPos, 1.f));
+
+                float newIntensity = intensity * std::exp(-out.w * stepSize);
+
+                float light = std::max(glm::dot(normal, settings.lightDir), 0.1f);
+
+                color += (intensity - newIntensity) * light * glm::vec3(out.x, out.y,  out.z);
+                total += (intensity - newIntensity);
+
+                intensity = newIntensity;
+            }
+
+            minT += stepSize;
+        }
+
+        // Jump into next node
+        //ray.minT = maxT + dT;
+        ray.minT = minT;
+        st.pop();
+    }
+
+    if (total == 0)
+        return color;
+    return color / (total * 255);
+}
+//*/
+
+
 glm::vec3 castRayFast(Volume const& volume, Ray ray)
 {
     //glm::vec3 pos;
@@ -207,7 +352,7 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
             // We need to jump over
             if (id == prevID)
             {
-                ray.minT = maxT + dT;
+                ray.minT = minT + dT;
                 continue;
             }
 

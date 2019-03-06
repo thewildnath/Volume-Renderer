@@ -19,7 +19,7 @@
 
 #define SCREEN_WIDTH RES
 #define SCREEN_HEIGHT RES
-#define FULLSCREEN_MODE true
+#define FULLSCREEN_MODE false
 
 #undef main // Bloody hell, hope it doesn't come back and haunt me
 
@@ -106,7 +106,7 @@ void Draw(screen *screen)
 
             scg::Ray ray(origin, dir, 0, 500);
 
-            glm::vec3 color = useOctree? scg::castRayFast(volume, ray) : scg::castRay(volume, ray);
+            glm::vec3 color = useOctree? scg::castRayFaster(volume, ray) : scg::castRay(volume, ray);
 
             PutPixelSDL(screen, x, y, color);
         }

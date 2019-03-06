@@ -35,7 +35,7 @@ void buildOctree(Volume const& volume, Octree &octree, int levels)
             {
                 for (int z = (int)std::ceil(bb.min.z); z <= (int)std::floor(bb.max.z); ++z)
                 {
-                    if (volume.data[x][y][z] > 2400)
+                    if (volume.data[x][y][z] > 1300)
                     {
                         octree.isEmpty = false;
                         return;
