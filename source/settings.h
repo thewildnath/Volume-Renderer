@@ -22,6 +22,10 @@ public:
     int octreeLevels;
 
     std::vector<std::pair<float, glm::vec4>> pieces;
+
+    std::vector<int> brackets;
+
+    int mask;
 };
 
 extern Settings settings;

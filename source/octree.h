@@ -12,7 +12,7 @@ public:
     BoundingBox bb;
     Octree* nodes[8];
     bool isLeaf;
-    bool isEmpty;
+    //bool isEmpty;
 
     int mask; // Mask for buckets inside
 

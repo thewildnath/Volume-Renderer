@@ -1,9 +1,12 @@
 #include <volume.h>
 
 #include <utils.h>
+#include <settings.h>
 
 namespace scg
 {
+// Extern
+//Settings settings;
 
 float eps = 2;
 
@@ -35,16 +38,21 @@ void buildOctree(Volume const& volume, Octree &octree, int levels)
             {
                 for (int z = (int)std::ceil(bb.min.z - 1); z <= (int)std::floor(bb.max.z + 1); ++z)
                 {
-                    if (volume.data[x][y][z] > 2400)
+                    int bracket = 0;
+                    while (settings.brackets[bracket + 1] <= volume.data[x][y][z])
+                        ++bracket;
+
+                    octree.mask |= (1 << bracket);
+                    /*if (volume.data[x][y][z] > 2400)
                     {
                         octree.isEmpty = false;
                         return;
-                    }
+                    }*/
                 }
             }
         }
 
-        octree.isEmpty = true;
+        //octree.isEmpty = true;
 
         return;
     }
@@ -93,9 +101,11 @@ void buildOctree(Volume const& volume, Octree &octree, int levels)
     );
     buildOctree(volume, *octree.nodes[7], levels - 1);
 
+    //int maskAll = 0;
     for (int i = 0; i < 7; ++i)
     {
-        octree.isEmpty &= octree.nodes[i]->isEmpty;
+        octree.mask |= octree.nodes[i]->mask;
+        //octree.isEmpty &= octree.nodes[i]->isEmpty;
     }
 }
 

@@ -61,12 +61,10 @@ inline glm::vec3 getNormal(scg::Volume const &volume, glm::vec3 const &pos, floa
 
 inline glm::vec4 piecewise(float coef)
 {
-    //return coef > 1300 ? glm::vec4(255,255,255,1) : glm::vec4(0,0,0,0);
+    //return coef > 2400 ? glm::vec4(255, 255, 255, 1) : glm::vec4(0, 0, 0, 0);
     int index = 0;
-
-    while(settings.pieces[index].first <= coef)
+    while(settings.pieces[index + 1].first <= coef)
         ++index;
-    --index;
 
     float dx = settings.pieces[index + 1].first - settings.pieces[index].first;
     float dist = (coef - settings.pieces[index].first) / dx;
@@ -190,7 +188,7 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
         }
 
         // Skip
-        if (node->isEmpty)
+        if (!(node->mask & settings.mask))//node->isEmpty)
         {
             // Jump into next node
             ray.minT = maxT + dT;
@@ -259,7 +257,7 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
 
                 float newIntensity = intensity * std::exp(-out.w * stepSize);
 
-                float light = std::max(glm::dot(normal, settings.lightDir), 0.1f);
+                float light = std::max(glm::dot(normal, ray.dir/*settings.lightDir*/), 0.1f);
 
                 color += (intensity - newIntensity) * light * glm::vec3(out.x, out.y,  out.z);
                 total += (intensity - newIntensity);

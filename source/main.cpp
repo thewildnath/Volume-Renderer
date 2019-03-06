@@ -50,18 +50,22 @@ int main(int argc, char *argv[])
 {
     screen *screen = InitializeSDL(SCREEN_WIDTH, SCREEN_HEIGHT, FULLSCREEN_MODE);
 
+    // Load settings
+    // TODO: move to class, add loader method from file
     scg::settings.lightDir = glm::vec3(0.75f, 0, 0.75f);
-
-    scg::settings.stepSize = 0.3f;
+    scg::settings.stepSize = 0.1f;
     scg::settings.df = 0.5f;
-
     scg::settings.slice = 0;
-
     scg::settings.octreeLevels = 5;
-
+    scg::settings.brackets = std::vector<int>{
+        0, 1000, 1300, 1500, 1750, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2850, 3000, 3250, 3500, 100000
+    };
     loadPiecewise();
+
+    // Load volume
     loadBrain(volume);
 
+    // Start rendering
     while (Update())
     {
         Draw(screen);
@@ -92,7 +96,7 @@ void Draw(screen *screen)
     /* Clear buffer */
     memset(screen->buffer, 0, screen->height * screen->width * sizeof(uint32_t));
 
-    #pragma omp parallel for num_threads(8) schedule(dynamic)// collapse(2)
+    #pragma omp parallel for num_threads(8)// schedule(dynamic)// collapse(2)
     for (int y = 0; y < SCREEN_HEIGHT; ++y)
     {
         for (int x = 0; x < SCREEN_WIDTH; ++x)
@@ -201,6 +205,22 @@ void loadPiecewise()
     while(fin >> x >> a >> r >> g >> b)
     {
         scg::settings.pieces.push_back(std::make_pair(x, glm::vec4(r, g, b, a)));
+    }
+
+    scg::settings.mask = 0;
+    for (int i = 0; i < (int)scg::settings.pieces.size() - 1; ++i)
+    {
+        if (scg::settings.pieces[i].second.w > 0 || scg::settings.pieces[i + 1].second.w > 0)
+        {
+            for (int bracket = 0; bracket < (int)scg::settings.brackets.size() - 1; ++bracket)
+            {
+                if (scg::settings.pieces[i].first < scg::settings.brackets[bracket + 1] &&
+                    scg::settings.brackets[bracket] <= scg::settings.pieces[i + 1].first)
+                {
+                    scg::settings.mask |= (1 << bracket);
+                }
+            }
+        }
     }
 }
 
