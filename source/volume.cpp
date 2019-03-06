@@ -101,12 +101,17 @@ void buildOctree(Volume const& volume, Octree &octree, int levels)
     );
     buildOctree(volume, *octree.nodes[7], levels - 1);
 
-    //int maskAll = 0;
+    int maskAll = octree.nodes[0]->mask;
     for (int i = 0; i < 7; ++i)
     {
         octree.mask |= octree.nodes[i]->mask;
+        maskAll &= octree.nodes[i]->mask;
         //octree.isEmpty &= octree.nodes[i]->isEmpty;
     }
+
+    if (octree.mask == maskAll)
+        // TODO: free memory!
+        octree.isLeaf = true;
 }
 
 }
