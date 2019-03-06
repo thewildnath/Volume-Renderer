@@ -32,11 +32,11 @@ void buildOctree(Volume const& volume, Octree &octree, int levels)
     {
         octree.isLeaf = true;
 
-        for (int x = (int)std::ceil(bb.min.x - 1); x <= (int)std::floor(bb.max.x + 1); ++x)
+        for (int x = (int)std::round(bb.min.x - 1); x <= (int)std::round(bb.max.x + 1); ++x)
         {
-            for (int y = (int)std::ceil(bb.min.y - 1); y <= (int)std::floor(bb.max.y + 1); ++y)
+            for (int y = (int)std::round(bb.min.y - 1); y <= (int)std::round(bb.max.y + 1); ++y)
             {
-                for (int z = (int)std::ceil(bb.min.z - 1); z <= (int)std::floor(bb.max.z + 1); ++z)
+                for (int z = (int)std::round(bb.min.z - 1); z <= (int)std::round(bb.max.z + 1); ++z)
                 {
                     int bracket = 0;
                     while (settings.brackets[bracket + 1] <= volume.data[x][y][z])
