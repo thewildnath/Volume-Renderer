@@ -29,13 +29,13 @@ void buildOctree(Volume const& volume, Octree &octree, int levels)
     {
         octree.isLeaf = true;
 
-        for (int x = (int)std::ceil(bb.min.x); x <= (int)std::floor(bb.max.x); ++x)
+        for (int x = (int)std::ceil(bb.min.x - 1); x <= (int)std::floor(bb.max.x + 1); ++x)
         {
-            for (int y = (int)std::ceil(bb.min.y); y <= (int)std::floor(bb.max.y); ++y)
+            for (int y = (int)std::ceil(bb.min.y - 1); y <= (int)std::floor(bb.max.y + 1); ++y)
             {
-                for (int z = (int)std::ceil(bb.min.z); z <= (int)std::floor(bb.max.z); ++z)
+                for (int z = (int)std::ceil(bb.min.z - 1); z <= (int)std::floor(bb.max.z + 1); ++z)
                 {
-                    if (volume.data[x][y][z] > 1300)
+                    if (volume.data[x][y][z] > 2400)
                     {
                         octree.isEmpty = false;
                         return;

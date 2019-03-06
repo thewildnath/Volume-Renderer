@@ -41,7 +41,7 @@ glm::vec3 volumePos(-126, -126, -75);
 scg::Volume volume(256, 256, 256);
 scg::Volume temp(256, 256, 256);
 
-bool useOctree = true;
+int type = 1;
 
 // Extern
 scg::Settings scg::settings;
@@ -52,12 +52,12 @@ int main(int argc, char *argv[])
 
     scg::settings.lightDir = glm::vec3(0.75f, 0, 0.75f);
 
-    scg::settings.stepSize = 0.5f;
+    scg::settings.stepSize = 0.3f;
     scg::settings.df = 0.5f;
 
     scg::settings.slice = 0;
 
-    scg::settings.octreeLevels = 4;
+    scg::settings.octreeLevels = 5;
 
     loadPiecewise();
     loadBrain(volume);
@@ -106,7 +106,12 @@ void Draw(screen *screen)
 
             scg::Ray ray(origin, dir, 0, 500);
 
-            glm::vec3 color = useOctree? scg::castRayFaster(volume, ray) : scg::castRay(volume, ray);
+            glm::vec3 color;
+
+            if (type == 1)
+                color = scg::castRayFast(volume, ray);
+            else// if (type == 2)
+                color = scg::castRay(volume, ray);
 
             PutPixelSDL(screen, x, y, color);
         }
@@ -122,7 +127,7 @@ bool Update()
     float dt = float(t2 - t);
     t = t2;
     /*Good idea to remove this*/
-    std::cout << "Render time: " << dt << " ms." << std::endl;
+    std::cout << "Time: " << dt << " ms. " << std::endl;
 
     SDL_Event e;
     while (SDL_PollEvent(&e))
@@ -170,8 +175,11 @@ bool Update()
                 case SDLK_r:
                     loadPiecewise();
                     break;
-                case SDLK_o:
-                    useOctree = !useOctree;
+                case SDLK_1:
+                    type = 1;
+                    break;
+                case SDLK_2:
+                    type = 2;
                     break;
                 case SDLK_ESCAPE:
                     /* Move camera quit */

@@ -13,8 +13,6 @@ float sampleVolume(scg::Volume const &, glm::vec3 const &);
 
 glm::vec3 castRay(Volume const&, Ray const&);
 
-glm::vec3 castRayFaster(Volume const&, Ray);
-
 glm::vec3 castRayFast(Volume const&, Ray);
 
 }
