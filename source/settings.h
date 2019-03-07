@@ -24,6 +24,7 @@ public:
     std::vector<std::pair<float, glm::vec4>> pieces;
 
     std::vector<int> brackets;
+    std::vector<float> minStepSize;
 
     int mask;
 };

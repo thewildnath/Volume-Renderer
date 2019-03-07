@@ -27,11 +27,6 @@ inline glm::vec3 getNormal(scg::Volume const &volume, glm::vec3 const &pos, floa
         sampleVolume(volume, pos + deltaZ) - sampleVolume(volume, pos - deltaZ));
 }
 
-std::vector<std::pair<float, float>> stepSizes = {
-    std::make_pair(0.0f, 1.0f),
-    std::make_pair(0.3f, 0.5f),
-    std::make_pair(1.0f, 0.1f)};
-
 glm::vec3 castRay(Volume const& volume, Ray const& ray)
 {
     //glm::vec3 pos;
@@ -69,7 +64,7 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
 
             float newIntensity = intensity * std::exp(-out.w * stepSize);
 
-            float light = std::max(glm::dot(normal, settings.lightDir), 0.1f);
+            float light = std::max(glm::dot(normal, ray.dir/*settings.lightDir*/), 0.1f);
 
             color += (intensity - newIntensity) * light * glm::vec3(out.x, out.y,  out.z);
             total += (intensity - newIntensity);
@@ -189,6 +184,15 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
         }
 
         // Cast ray inside node
+        /*float stepSize = 1.0f;
+        for (int i = 0; i < (int)settings.minStepSize.size(); ++i)
+        {
+            if (node->mask & (1 << i) && settings.minStepSize[i] < stepSize)
+            {
+                stepSize = settings.minStepSize[i];
+            }
+        }*/
+
         while (intensity > 0.1f)
         {
             if (minT > maxT)

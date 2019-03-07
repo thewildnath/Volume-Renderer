@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
     scg::settings.brackets = std::vector<int>{
         0, 1000, 1300, 1500, 1750, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2850, 3000, 3250, 3500, 100000
     };
+    scg::settings.minStepSize.resize(scg::settings.brackets.size() - 1);
     loadPiecewise();
 
     // Load volume
@@ -96,7 +97,7 @@ void Draw(screen *screen)
     /* Clear buffer */
     memset(screen->buffer, 0, screen->height * screen->width * sizeof(uint32_t));
 
-    #pragma omp parallel for num_threads(8)// schedule(dynamic)// collapse(2)
+    #pragma omp parallel for num_threads(8) schedule(dynamic)// collapse(2)
     for (int y = 0; y < SCREEN_HEIGHT; ++y)
     {
         for (int x = 0; x < SCREEN_WIDTH; ++x)
@@ -202,9 +203,14 @@ void loadPiecewise()
     scg::settings.pieces.clear();
     float x, a, r, g, b;
 
-    while(fin >> x >> a >> r >> g >> b)
+    while (fin >> x >> a >> r >> g >> b)
     {
         scg::settings.pieces.push_back(std::make_pair(x, glm::vec4(r, g, b, a)));
+    }
+
+    for (int i = 0; i < (int)scg::settings.minStepSize.size(); ++i)
+    {
+        scg::settings.minStepSize[i] = 0;
     }
 
     scg::settings.mask = 0;
@@ -214,13 +220,27 @@ void loadPiecewise()
         {
             for (int bracket = 0; bracket < (int)scg::settings.brackets.size() - 1; ++bracket)
             {
-                if (scg::settings.pieces[i].first < scg::settings.brackets[bracket + 1] &&
-                    scg::settings.brackets[bracket] <= scg::settings.pieces[i + 1].first)
+                float minX = std::fmaxf(scg::settings.pieces[i].first, scg::settings.brackets[bracket]);
+                float maxX = std::fminf(scg::settings.pieces[i + 1].first, scg::settings.brackets[bracket + 1]);
+
+                if (minX < maxX)
                 {
                     scg::settings.mask |= (1 << bracket);
+
+                    float maxCoef = std::fmaxf(scg::piecewise(minX).w, scg::piecewise(maxX).w);
+                    if (maxCoef > scg::settings.minStepSize[bracket])
+                    {
+                        scg::settings.minStepSize[bracket] = maxCoef;
+                    }
                 }
             }
         }
+    }
+
+    for (int i = 0; i < (int)scg::settings.minStepSize.size(); ++i)
+    {
+        scg::settings.minStepSize[i] =
+            1.0f * scg::settings.minStepSize[i] + 0.1f * (1 - scg::settings.minStepSize[i]);
     }
 }
 
