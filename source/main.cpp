@@ -19,7 +19,7 @@
 
 #define SCREEN_WIDTH RES
 #define SCREEN_HEIGHT RES
-#define FULLSCREEN_MODE false
+#define FULLSCREEN_MODE true
 
 #undef main // Bloody hell, hope it doesn't come back and haunt me
 
@@ -207,12 +207,12 @@ void loadPiecewise()
     {
         scg::settings.pieces.push_back(std::make_pair(x, glm::vec4(r, g, b, a)));
     }
-
+/*
     for (int i = 0; i < (int)scg::settings.minStepSize.size(); ++i)
     {
         scg::settings.minStepSize[i] = 0;
     }
-
+*/
     scg::settings.mask = 0;
     for (int i = 0; i < (int)scg::settings.pieces.size() - 1; ++i)
     {
@@ -226,22 +226,24 @@ void loadPiecewise()
                 if (minX < maxX)
                 {
                     scg::settings.mask |= (1 << bracket);
-
+                    /*
                     float maxCoef = std::fmaxf(scg::piecewise(minX).w, scg::piecewise(maxX).w);
                     if (maxCoef > scg::settings.minStepSize[bracket])
                     {
                         scg::settings.minStepSize[bracket] = maxCoef;
                     }
+                     */
                 }
             }
         }
     }
-
+/*
     for (int i = 0; i < (int)scg::settings.minStepSize.size(); ++i)
     {
         scg::settings.minStepSize[i] =
             1.0f * scg::settings.minStepSize[i] + 0.1f * (1 - scg::settings.minStepSize[i]);
     }
+*/
 }
 
 void loadBrain(scg::Volume& volume)
