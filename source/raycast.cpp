@@ -132,7 +132,7 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
         }
 
         // Skip
-        if (!(node->mask & settings.mask))//node->isEmpty)
+        if (!(node->mask & settings.mask))
         {
             // Jump into next node
             ray.minT = maxT + dT;
@@ -144,7 +144,6 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
         if (!node->isLeaf)
         {
             // Find first child
-            //int count = 0;
             while(minT <= maxT)
             {
                 glm::vec3 mid = node->bb.mid;
@@ -226,7 +225,6 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
         }
 
         // Jump into next node
-        //ray.minT = maxT + dT;
         ray.minT = minT;
         st.pop();
     }

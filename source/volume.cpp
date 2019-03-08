@@ -1,6 +1,7 @@
 #include <volume.h>
 
 #include <utils.h>
+#include <raycast.h>
 #include <settings.h>
 
 namespace scg
@@ -39,20 +40,14 @@ void buildOctree(Volume const& volume, Octree &octree, int levels)
                 for (int z = (int)std::round(bb.min.z - 1); z <= (int)std::round(bb.max.z + 1); ++z)
                 {
                     int bracket = 0;
-                    while (settings.brackets[bracket + 1] <= volume.data[x][y][z])
+                    float coef = sampleVolume(volume, glm::vec3(x, y, z));
+                    while (settings.brackets[bracket + 1] <= coef)
                         ++bracket;
 
                     octree.mask |= (1 << bracket);
-                    /*if (volume.data[x][y][z] > 2400)
-                    {
-                        octree.isEmpty = false;
-                        return;
-                    }*/
                 }
             }
         }
-
-        //octree.isEmpty = true;
 
         return;
     }
@@ -102,16 +97,17 @@ void buildOctree(Volume const& volume, Octree &octree, int levels)
     buildOctree(volume, *octree.nodes[7], levels - 1);
 
     int maskAll = octree.nodes[0]->mask;
-    for (int i = 0; i < 7; ++i)
+    for (int i = 0; i < 8; ++i)
     {
         octree.mask |= octree.nodes[i]->mask;
         maskAll &= octree.nodes[i]->mask;
-        //octree.isEmpty &= octree.nodes[i]->isEmpty;
     }
 
     if (octree.mask == maskAll)
+    {
         // TODO: free memory!
         octree.isLeaf = true;
+    }
 }
 
 }
