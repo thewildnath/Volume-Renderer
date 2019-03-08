@@ -44,7 +44,6 @@ inline float sampleVolume(scg::Volume const &volume, glm::vec3 const &pos)
 
 inline glm::vec4 piecewise(float coef)
 {
-    //return coef > 2400 ? glm::vec4(255, 255, 255, 1) : glm::vec4(0, 0, 0, 0);
     int index = 0;
     while(settings.pieces[index + 1].first <= coef)
         ++index;

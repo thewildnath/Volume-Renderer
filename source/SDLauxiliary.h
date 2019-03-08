@@ -146,7 +146,6 @@ screen* InitializeSDL(int width,int height, bool fullscreen)
     return s;
 }
 
-
 void PutPixelSDL(screen* s, int x, int y, glm::vec3 colour)
 {
     if(x<0 || x>=s->width || y<0 || y>=s->height)
