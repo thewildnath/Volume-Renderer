@@ -183,14 +183,16 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
         }
 
         // Cast ray inside node
-        /*float stepSize = 1.0f;
+//*
+        float stepSize = 1.0f;
         for (int i = 0; i < (int)settings.minStepSize.size(); ++i)
         {
             if (node->mask & (1 << i) && settings.minStepSize[i] < stepSize)
             {
                 stepSize = settings.minStepSize[i];
             }
-        }*/
+        }
+//*/
 
         while (intensity > 0.1f)
         {
@@ -207,15 +209,16 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
             {
                 glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));
 
-                float newIntensity = intensity * std::exp(-out.w * stepSize);
+                float newIntensity = intensity * std::exp(-out.w * stepSize * 1.0f);
 
                 float light = std::max(glm::dot(normal, ray.dir/*settings.lightDir*/), 0.1f);
 
                 //glm::vec3 reflected = glm::normalize(glm::reflect(ray.dir, normal));
-                //float specular = std::pow(glm::dot(-ray.dir, reflected), 1);
+                //float specularLow  = std::pow(glm::dot(-ray.dir, reflected), 10);
+                //float specularHigh = std::pow(glm::dot(-ray.dir, reflected), 500);
 
                 color += (intensity - newIntensity) *
-                    (light * glm::vec3(out.x, out.y,  out.z) * 1.0f);// + specular * 50.0f);
+                    (light * glm::vec3(out.x, out.y,  out.z) * 1.0f);// + specularLow * 20.0f + specularHigh * 50.0f);
                 total += (intensity - newIntensity);
 
                 intensity = newIntensity;

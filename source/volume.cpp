@@ -18,7 +18,7 @@ Volume::Volume(int height, int width, int depth)
     this->depth = depth;
 
     this->octree = Octree(
-        BoundingBox(glm::vec3(0 + eps, 0 + eps, 0 + eps), glm::vec3(width - eps, height - eps, depth / 1.5 - eps))
+        BoundingBox(glm::vec3(0 + eps, 0 + eps, 0 + eps), glm::vec3(230 - eps, 220 - eps, 135 - eps))
     );
 
     //this->data = new int[depth, height, width];

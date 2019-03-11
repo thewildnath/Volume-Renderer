@@ -19,7 +19,7 @@
 
 #define SCREEN_WIDTH RES
 #define SCREEN_HEIGHT RES
-#define FULLSCREEN_MODE true
+#define FULLSCREEN_MODE false
 
 #undef main // Bloody hell, hope it doesn't come back and haunt me
 
@@ -29,15 +29,16 @@ bool Update();
 void Draw(screen *screen);
 void loadPiecewise();
 void loadBrain(scg::Volume& volume);
+void loadHead(scg::Volume& volume);
 
 int focalLength = RES;
 float fovH = 1;
 float fovV = 1;
 
 glm::vec4 cameraPos(0, 0, -256, 1);
-float angle = 0;
+float angle = -15;
 
-glm::vec3 volumePos(-126, -126, -75);
+glm::vec3 volumePos(-135, -126, -75);
 scg::Volume volume(256, 256, 256);
 scg::Volume temp(256, 256, 256);
 
@@ -52,8 +53,8 @@ int main(int argc, char *argv[])
 
     // Load settings
     // TODO: move to class, add loader method from file
-    scg::settings.lightDir = glm::vec3(0.75f, 0, 0.75f);
-    scg::settings.stepSize = 0.1f;
+    scg::settings.lightDir = glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f));
+    scg::settings.stepSize = 0.05f;
     scg::settings.df = 0.5f;
     scg::settings.slice = 0;
     scg::settings.octreeLevels = 5;
@@ -65,6 +66,7 @@ int main(int argc, char *argv[])
 
     // Load volume
     loadBrain(volume);
+    //loadHead(volume);
 
     // Start rendering
     while (Update())
@@ -207,12 +209,12 @@ void loadPiecewise()
     {
         scg::settings.pieces.push_back(std::make_pair(x, glm::vec4(r, g, b, a)));
     }
-/*
+//*
     for (int i = 0; i < (int)scg::settings.minStepSize.size(); ++i)
     {
         scg::settings.minStepSize[i] = 0;
     }
-*/
+//*/
     scg::settings.mask = 0;
     for (int i = 0; i < (int)scg::settings.pieces.size() - 1; ++i)
     {
@@ -226,24 +228,24 @@ void loadPiecewise()
                 if (minX < maxX)
                 {
                     scg::settings.mask |= (1 << bracket);
-                    /*
+                    //*
                     float maxCoef = std::fmaxf(scg::piecewise(minX).w, scg::piecewise(maxX).w);
                     if (maxCoef > scg::settings.minStepSize[bracket])
                     {
                         scg::settings.minStepSize[bracket] = maxCoef;
                     }
-                     */
+                    //*/
                 }
             }
         }
     }
-/*
+//*
     for (int i = 0; i < (int)scg::settings.minStepSize.size(); ++i)
     {
         scg::settings.minStepSize[i] =
             1.0f * scg::settings.minStepSize[i] + 0.1f * (1 - scg::settings.minStepSize[i]);
     }
-*/
+//*/
 }
 
 void loadBrain(scg::Volume& volume)
@@ -270,7 +272,6 @@ void loadBrain(scg::Volume& volume)
             {
                 for (int z = 0; z < width; ++z)
                 {
-                    //std::cout << x << " " << y << " " << z << " " << y * width + z << std::endl;
                     temp.data[z][y][x] = image[y * width + z];
                 }
             }
@@ -287,6 +288,55 @@ void loadBrain(scg::Volume& volume)
             for (int z = 0; z < volume.height; ++z)
             {
                 volume.data[z][y][x] = (int)std::round(scg::sampleVolume(temp, glm::vec3(z, y, x / 1.3f)));
+            }
+        }
+    }
+
+    buildOctree(volume, volume.octree, scg::settings.octreeLevels);
+
+    std::cout << "done" << std::endl;
+}
+
+void loadHead(scg::Volume& volume)
+{
+    char filename[50] = "../data/StanfordHead/cthead-16bit001.tif";
+    for (int x = 0; x < 99; ++x)
+    {
+        sprintf(filename + 33, "%03d.tif", x + 1);
+        std::cout << "Loading: " << filename << std::endl;
+
+        TinyTIFFReaderFile* tiffr = TinyTIFFReader_open(filename);
+        if (!tiffr)
+        {
+            std::cout<<"ERROR reading (not existent, not accessible or no TIFF file)\n";
+        }
+        else
+        {
+            int width = TinyTIFFReader_getWidth(tiffr);
+            int height = TinyTIFFReader_getHeight(tiffr);
+            uint16_t* image = (uint16_t*)calloc((size_t)width * height, sizeof(uint16_t));
+            TinyTIFFReader_getSampleData(tiffr, image, 0);
+
+            for (int y = 0; y < height; ++y)
+            {
+                for (int z = 0; z < width; ++z)
+                {
+                    temp.data[z][y][x] = image[y * width + z];
+                }
+            }
+
+            free(image);
+        }
+        TinyTIFFReader_close(tiffr);
+    }
+
+    for (int x = 0; x < volume.width; ++x)
+    {
+        for (int y = 0; y < volume.height; ++y)
+        {
+            for (int z = 0; z < volume.height; ++z)
+            {
+                volume.data[z][y][x] = (int)std::round(scg::sampleVolume(temp, glm::vec3(z, y, x / 2.0f)));
             }
         }
     }
