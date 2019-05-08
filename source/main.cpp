@@ -1,5 +1,6 @@
 #include <ray.h>
 #include <raycast.h>
+#include "sampler.h"
 #include <SDLauxiliary.h>
 #include <settings.h>
 #include <utils.h>
@@ -10,12 +11,13 @@
 #include <SDL.h>
 
 #include <algorithm>
-#include <iostream>
 #include <cstdint>
 #include <fstream>
+#include <iostream>
+#include <omp.h>
 #include <vector>
 
-#define RES 300
+#define RES 400
 
 #define SCREEN_WIDTH RES
 #define SCREEN_HEIGHT RES
@@ -30,6 +32,7 @@ void Draw(screen *screen);
 void loadPiecewise();
 void loadBrain(scg::Volume& volume);
 void loadHead(scg::Volume& volume);
+void InitialiseBuffer();
 
 int focalLength = RES;
 float fovH = 1;
@@ -42,13 +45,20 @@ glm::vec3 volumePos(-135, -126, -75);
 scg::Volume volume(256, 256, 256);
 scg::Volume temp(256, 256, 256);
 
-int type = 1;
+int type = 2;
+
+scg::Sampler sampler[20];
 
 // Extern
 scg::Settings scg::settings;
 
+int samples;
+glm::vec3 buffer[SCREEN_HEIGHT][SCREEN_WIDTH];
+
 int main(int argc, char *argv[])
 {
+    InitialiseBuffer();
+
     screen *screen = InitializeSDL(SCREEN_WIDTH, SCREEN_HEIGHT, FULLSCREEN_MODE);
 
     // Load settings
@@ -59,7 +69,7 @@ int main(int argc, char *argv[])
     scg::settings.slice = 0;
     scg::settings.octreeLevels = 5;
     scg::settings.brackets = std::vector<int>{
-        0, 1000, 1300, 1500, 1750, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2850, 3000, 3250, 3500, 100000
+        0, 1000, 1300, 1500, 1750, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2850, 3000, 3250, 3500, 99999 // 1 less than piecewise!
     };
     scg::settings.minStepSize.resize(scg::settings.brackets.size() - 1);
     loadPiecewise();
@@ -96,6 +106,8 @@ glm::vec3 rotate(glm::vec3 p, float angle)
 /*Place your drawing here*/
 void Draw(screen *screen)
 {
+    ++samples;
+
     /* Clear buffer */
     memset(screen->buffer, 0, screen->height * screen->width * sizeof(uint32_t));
 
@@ -114,13 +126,23 @@ void Draw(screen *screen)
             scg::Ray ray(origin, dir, 0, 500);
 
             glm::vec3 color;
+            float gamma = 2.0f;
 
             if (type == 1)
+            {
                 color = scg::castRayFast(volume, ray);
-            else// if (type == 2)
-                color = scg::castRay(volume, ray);
+            }
+            else if (type == 2)
+            {
+                color = scg::singleScatter(volume, ray, 1, sampler[omp_get_thread_num()]);
+            }
+            else// if (type == 3)
+            {
+                color = scg::singleScatter(volume, ray, 2, sampler[omp_get_thread_num()]);
+            }
 
-            PutPixelSDL(screen, x, y, color);
+            buffer[y][x] += color * gamma;
+            PutPixelSDL(screen, x, y, buffer[y][x] / (float)samples);
         }
     }
 }
@@ -150,43 +172,58 @@ bool Update()
                 case SDLK_UP:
                     /* Move camera forward */
                     cameraPos.z += 3;
+                    InitialiseBuffer();
                     break;
                 case SDLK_DOWN:
                     /* Move camera backwards */
                     cameraPos.z -= 3;
+                    InitialiseBuffer();
                     break;
                 case SDLK_4:
                     /* Move camera left */
                     cameraPos.x -= 3;
+                    InitialiseBuffer();
                     break;
                 case SDLK_6:
                     /* Move camera right */
                     cameraPos.x += 3;
+                    InitialiseBuffer();
                     break;
                 case SDLK_LEFT:
                     angle -= 5;
                     if (angle < 0)
                         angle += 360;
+                    InitialiseBuffer();
                     break;
                 case SDLK_RIGHT:
                     angle += 5;
                     if (angle > 360)
                         angle -= 360;
+                    InitialiseBuffer();
                     break;
                 case SDLK_LEFTBRACKET:
                     scg::settings.slice += 2;
+                    InitialiseBuffer();
                     break;
                 case SDLK_RIGHTBRACKET:
                     scg::settings.slice -= 2;
+                    InitialiseBuffer();
                     break;
                 case SDLK_r:
                     loadPiecewise();
+                    InitialiseBuffer();
                     break;
                 case SDLK_1:
                     type = 1;
+                    InitialiseBuffer();
                     break;
                 case SDLK_2:
                     type = 2;
+                    InitialiseBuffer();
+                    break;
+                case SDLK_3:
+                    type = 3;
+                    InitialiseBuffer();
                     break;
                 case SDLK_ESCAPE:
                     /* Move camera quit */
@@ -204,6 +241,8 @@ void loadPiecewise()
 
     scg::settings.pieces.clear();
     float x, a, r, g, b;
+
+    fin >> scg::settings.densityScale;
 
     while (fin >> x >> a >> r >> g >> b)
     {
@@ -344,4 +383,10 @@ void loadHead(scg::Volume& volume)
     buildOctree(volume, volume.octree, scg::settings.octreeLevels);
 
     std::cout << "done" << std::endl;
+}
+
+void InitialiseBuffer()
+{
+    samples = 0;
+    memset(buffer, 0, sizeof(buffer));
 }

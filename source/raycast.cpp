@@ -237,4 +237,155 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
     return color / (total * 255);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+
+class ScatterEvent
+{
+public:
+    bool isTrue;
+    float t;
+
+    ScatterEvent():
+        isTrue(false), t(0) {};
+
+    ScatterEvent(bool isTrue, float t):
+        isTrue(isTrue), t(t) {};
+};
+
+ScatterEvent castRayWoodcock(Volume const& volume, Ray const& ray, Sampler &sampler)
+{
+    ScatterEvent scatterEvent;
+
+    //glm::vec3 pos;
+    glm::vec3 color(0, 0, 0);
+
+    Intersection intersection;
+    volume.octree.bb.getIntersection(ray, intersection);
+
+    if (!intersection.valid)
+    {
+        return scatterEvent;
+    }
+
+    float minT = std::max(ray.minT, intersection.nearT);
+    float maxT = std::min(ray.maxT, intersection.farT);
+
+    float stepSize = 1.0f;//settings.stepSize;
+
+    minT += stepSize * (-std::log(sampler.nextFloat()));
+
+    while (minT < maxT)
+    {
+        glm::vec3 pos = ray.origin + ray.dir * minT;
+
+        float coef = sampleVolume(volume, pos);
+
+        glm::vec4 out = piecewise(coef);
+
+        if (sampler.nextFloat() < out.w * settings.densityScale * stepSize)
+        {
+            scatterEvent.isTrue = true;
+            scatterEvent.t = minT;
+            return scatterEvent;
+        }
+
+        minT += stepSize * (-std::log(sampler.nextFloat()));
+    }
+
+    return scatterEvent;
+}
+
+ScatterEvent castRayWoodcock2(Volume const& volume, Ray const& ray, Sampler &sampler)
+{
+    ScatterEvent scatterEvent;
+
+    //glm::vec3 pos;
+    glm::vec3 color(0, 0, 0);
+    float intensity = 1;
+    float total = 0;
+
+    Intersection intersection;
+    volume.octree.bb.getIntersection(ray, intersection);
+
+    if (!intersection.valid)
+    {
+        return scatterEvent;
+    }
+
+    float minT = std::max(ray.minT, intersection.nearT);
+    float maxT = std::min(ray.maxT, intersection.farT);
+
+    float stepSize = 1.0f;//settings.stepSize;
+
+    minT += stepSize * (-std::log(sampler.nextFloat()));
+
+    float const S = -std::log(sampler.nextFloat()) / settings.densityScale;
+    float sum = 0.0f;
+    float sigmaT = 0.0f;
+
+    while (sum < S)
+    {
+        if (minT > maxT)
+        {
+            return scatterEvent;
+        }
+
+        glm::vec3 pos = ray.origin + ray.dir * minT;
+
+        float coef = sampleVolume(volume, pos);
+
+        glm::vec4 out = piecewise(coef);
+
+        sigmaT = out.w * settings.densityScale;
+        sum += sigmaT * stepSize;
+
+        minT += stepSize * (-std::log(sampler.nextFloat()));
+    }
+
+    scatterEvent.isTrue = true;
+    scatterEvent.t = minT;
+
+    return scatterEvent;
+}
+
+glm::vec3 singleScatter(Volume const& volume, Ray const& ray, int type, Sampler &sampler)
+{
+    ScatterEvent scatterEvent = (type == 1) ? castRayWoodcock(volume, ray, sampler) : castRayWoodcock2(volume, ray, sampler);
+
+    if (!scatterEvent.isTrue)
+    {
+        return glm::vec3(0, 0, 0); // Background
+    }
+
+    glm::vec3 pos = ray(scatterEvent.t);
+
+    glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));
+
+    float coef = sampleVolume(volume, pos);
+
+    glm::vec4 out = piecewise(coef);
+
+    float light = 0.1f;
+
+    if (true)
+    {
+        glm::vec3 lightPos(-250, -250, -500);
+        Ray lightRay(pos, lightPos - pos);
+
+        if (!((type == 1) ? castRayWoodcock(volume, lightRay, sampler).isTrue : castRayWoodcock2(volume, lightRay, sampler).isTrue))
+        {
+            light = std::max(light, glm::dot(normal, -lightRay.dir));
+        }
+    }
+
+    //glm::vec3 reflected = glm::normalize(glm::reflect(ray.dir, normal));
+    //float specularLow  = std::pow(glm::dot(-ray.dir, reflected), 10);
+    //float specularHigh = std::pow(glm::dot(-ray.dir, reflected), 500);
+
+    glm::vec3 color = (light * glm::vec3(out.x, out.y,  out.z) * 1.0f);// + specularLow * 20.0f + specularHigh * 50.0f);
+    return color / 255.0f;
+}
+
 }

@@ -17,6 +17,8 @@ public:
     float stepSize;
     float df;
 
+    float densityScale;
+
     float slice;
 
     int octreeLevels;

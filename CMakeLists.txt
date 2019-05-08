@@ -3,6 +3,8 @@ project(raytracer)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "-Ofast -Wall -Wextra -fopenmp -march=native -ffast-math")
+#set(CMAKE_CXX_FLAGS "-O0 -Wall -Wextra -fopenmp -march=native -ffast-math")
+#set(CMAKE_CXX_FLAGS "-O0 -Wall -Wextra -march=native -ffast-math")
 
 #SET(LINK_FLAGS "-lmingw32 -lSDLmain -lSDL -mwindows")
 #SET(CMAKE_EXE_LINKER_FLAGS "${LINK_FLAGS}")
@@ -20,6 +22,7 @@ add_executable(renderer
         source/ray.h
         source/raycast.cpp
         source/raycast.h
+        source/sampler.h
         source/SDLauxiliary.h
         source/settings.h
         source/utils.cpp
