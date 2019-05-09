@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     // TODO: move to class, add loader method from file
     scg::settings.lightDir = glm::normalize(glm::vec3(1.0f, 0.5f, 1.0f));
     scg::settings.stepSize = 0.1f;
-    scg::settings.stepSizeWoodcock = 0.5f;
+    scg::settings.stepSizeWoodcock = 1.0f;
     scg::settings.df = 0.5f;
     scg::settings.slice = 0;
     scg::settings.octreeLevels = 5;

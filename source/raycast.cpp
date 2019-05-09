@@ -490,7 +490,7 @@ glm::vec3 singleScatter(Volume const& volume, Ray const& ray, int type, Sampler 
     {
         Ray lightRay(pos, -settings.lightDir);
 
-        if (!((type == 1) ? castRayWoodcock1(volume, lightRay, sampler).isTrue : castRayWoodcock2(volume, lightRay, sampler).isTrue))
+        if (!((type == 1) ? castRayWoodcock(volume, lightRay, sampler).isTrue : castRayWoodcock(volume, lightRay, sampler).isTrue))
         {
             light = std::max(light, glm::dot(normal, settings.lightDir));
         }
