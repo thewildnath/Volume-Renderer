@@ -1,9 +1,15 @@
-#include "volume.h"
+#include <volume.h>
 
 #include <utils.h>
+#include <raycast.h>
+#include <settings.h>
 
 namespace scg
 {
+// Extern
+//Settings settings;
+
+float eps = 2;
 
 Volume::Volume(int height, int width, int depth)
 {
@@ -11,54 +17,97 @@ Volume::Volume(int height, int width, int depth)
     this->width = width;
     this->depth = depth;
 
+    this->octree = Octree(
+        BoundingBox(glm::vec3(0 + eps, 0 + eps, 0 + eps), glm::vec3(230 - eps, 220 - eps, 135 - eps))
+    );
+
     //this->data = new int[depth, height, width];
 }
 
-void Volume::AddCylinder(int centerX, int centerY, int centerZ, int height, float radius, int value)
+void buildOctree(Volume const& volume, Octree &octree, int levels)
 {
-    int minZ = (int)std::round(std::max((float) 0, centerZ - radius + 1));
-    int maxZ = (int)std::round(std::min((float) depth, centerZ + radius - 1));
-    int minY = std::max(0, centerY - height / 2 + 1);
-    int maxY = std::min(height, centerY + height / 2 - 1);
-    int minX = (int)std::round(std::max((float) 0, centerX - radius + 1));
-    int maxX = (int)std::round(std::min((float) width, centerX + radius - 1));
+    BoundingBox &bb = octree.bb;
 
-    for (int z = minZ; z <= maxZ; ++z)
-        for (int y = minY; y <= maxY; ++y)
-            for (int x = minX; x <= maxX; ++x)
-                if (Vector2Length(centerX - x, centerZ - z) <= radius)
-                    data[z][y][x] += value;
-}
+    // Leaf
+    if (levels == 0)
+    {
+        octree.isLeaf = true;
 
-void Volume::AddCube(int centerX, int centerY, int centerZ, int length, int value)
-{
-    int minZ = (int)std::max(0, centerZ - length + 1);
-    int maxZ = (int)std::min(depth, centerZ + length - 1);
-    int minY = std::max(0, centerY - length + 1);
-    int maxY = std::min(height, centerY + length - 1);
-    int minX = (int)std::max(0, centerX - length + 1);
-    int maxX = (int)std::min(width, centerX + length - 1);
+        for (int x = (int)std::round(bb.min.x - 1); x <= (int)std::round(bb.max.x + 1); ++x)
+        {
+            for (int y = (int)std::round(bb.min.y - 1); y <= (int)std::round(bb.max.y + 1); ++y)
+            {
+                for (int z = (int)std::round(bb.min.z - 1); z <= (int)std::round(bb.max.z + 1); ++z)
+                {
+                    int bracket = 0;
+                    float coef = sampleVolume(volume, glm::vec3(x, y, z));
+                    while (settings.brackets[bracket + 1] <= coef)
+                        ++bracket;
 
-    for (int z = minZ; z <= maxZ; ++z)
-        for (int y = minY; y <= maxY; ++y)
-            for (int x = minX; x <= maxX; ++x)
-                data[z][y][x] += value;
-}
+                    octree.mask |= (1 << bracket);
+                }
+            }
+        }
 
-void Volume::AddSphere(int centerX, int centerY, int centerZ, float radius, int value)
-{
-    int minZ = (int)std::round(std::max((float) 0, centerZ - radius + 1));
-    int maxZ = (int)std::round(std::min((float) depth, centerZ + radius - 1));
-    int minY = (int)std::round(std::max((float) 0, centerY - radius + 1));
-    int maxY = (int)std::round(std::min((float) height, centerY + radius - 1));
-    int minX = (int)std::round(std::max((float) 0, centerX - radius + 1));
-    int maxX = (int)std::round(std::min((float) width, centerX + radius - 1));
+        return;
+    }
 
-    for (int z = minZ; z <= maxZ; ++z)
-        for (int y = minY; y <= maxY; ++y)
-            for (int x = minX; x <= maxX; ++x)
-                if (Vector3Length(centerX - x, centerY - y, centerZ - z) <= radius)
-                    data[z][y][x] += value;
+    octree.isLeaf = false;
+
+    // Create 8 child nodes
+    // 000
+    octree.nodes[0] = new Octree(
+        BoundingBox(glm::vec3(bb.min.x, bb.min.y, bb.min.z), glm::vec3(bb.mid.x, bb.mid.y, bb.mid.z))
+    );
+    buildOctree(volume, *octree.nodes[0], levels - 1);
+    // 001
+    octree.nodes[1] = new Octree(
+        BoundingBox(glm::vec3(bb.min.x, bb.min.y, bb.mid.z), glm::vec3(bb.mid.x, bb.mid.y, bb.max.z))
+    );
+    buildOctree(volume, *octree.nodes[1], levels - 1);
+    // 010
+    octree.nodes[2] = new Octree(
+        BoundingBox(glm::vec3(bb.min.x, bb.mid.y, bb.min.z), glm::vec3(bb.mid.x, bb.max.y, bb.mid.z))
+    );
+    buildOctree(volume, *octree.nodes[2], levels - 1);
+    // 011
+    octree.nodes[3] = new Octree(
+        BoundingBox(glm::vec3(bb.min.x, bb.mid.y, bb.mid.z), glm::vec3(bb.mid.x, bb.max.y, bb.max.z))
+    );
+    buildOctree(volume, *octree.nodes[3], levels - 1);
+    // 100
+    octree.nodes[4] = new Octree(
+        BoundingBox(glm::vec3(bb.mid.x, bb.min.y, bb.min.z), glm::vec3(bb.max.x, bb.mid.y, bb.mid.z))
+    );
+    buildOctree(volume, *octree.nodes[4], levels - 1);
+    // 101
+    octree.nodes[5] = new Octree(
+        BoundingBox(glm::vec3(bb.mid.x, bb.min.y, bb.mid.z), glm::vec3(bb.max.x, bb.mid.y, bb.max.z))
+    );
+    buildOctree(volume, *octree.nodes[5], levels - 1);
+    // 110
+    octree.nodes[6] = new Octree(
+        BoundingBox(glm::vec3(bb.mid.x, bb.mid.y, bb.min.z), glm::vec3(bb.max.x, bb.max.y, bb.mid.z))
+    );
+    buildOctree(volume, *octree.nodes[6], levels - 1);
+    // 111
+    octree.nodes[7] = new Octree(
+        BoundingBox(glm::vec3(bb.mid.x, bb.mid.y, bb.mid.z), glm::vec3(bb.max.x, bb.max.y, bb.max.z))
+    );
+    buildOctree(volume, *octree.nodes[7], levels - 1);
+
+    int maskAll = octree.nodes[0]->mask;
+    for (int i = 0; i < 8; ++i)
+    {
+        octree.mask |= octree.nodes[i]->mask;
+        maskAll &= octree.nodes[i]->mask;
+    }
+
+    if (octree.mask == maskAll)
+    {
+        // TODO: free memory!
+        octree.isLeaf = true;
+    }
 }
 
 }

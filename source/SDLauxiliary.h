@@ -5,6 +5,7 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <stdint.h>
+#include <cstring>
 
 typedef struct{
     SDL_Window *window;
@@ -144,7 +145,6 @@ screen* InitializeSDL(int width,int height, bool fullscreen)
 
     return s;
 }
-
 
 void PutPixelSDL(screen* s, int x, int y, glm::vec3 colour)
 {

@@ -2,6 +2,7 @@
 #define RAYTRACER_SETTINGS_H
 
 #include <glm/glm.hpp>
+
 #include <utility>
 #include <vector>
 
@@ -14,12 +15,22 @@ public:
     glm::vec3 lightDir;
 
     float stepSize;
-    int stepCount;
+    float stepSizeWoodcock;
     float df;
+
+    float densityScale;
 
     float slice;
 
+    int octreeLevels;
+
     std::vector<std::pair<float, glm::vec4>> pieces;
+
+    std::vector<int> brackets;
+    std::vector<float> maxOpacity;
+    std::vector<float> minStepSize;
+
+    int mask;
 };
 
 extern Settings settings;

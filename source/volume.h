@@ -1,6 +1,8 @@
 #ifndef RAYTRACER_VOLUME_H
 #define RAYTRACER_VOLUME_H
 
+#include <octree.h>
+
 #include <algorithm>
 #include <cmath>
 
@@ -18,14 +20,12 @@ public:
 
     int data[SIZE][SIZE][SIZE];
 
+    Octree octree;
+
     Volume(int height, int width, int depth);
-
-    void AddCylinder(int centerX, int centerY, int centerZ, int height, float radius, int value);
-
-    void AddCube(int centerX, int centerY, int centerZ, int length, int value);
-
-    void AddSphere(int centerX, int centerY, int centerZ, float radius, int value);
 };
+
+void buildOctree(Volume const& volume, Octree &octree, int levels);
 
 }
 
