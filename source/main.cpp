@@ -45,7 +45,7 @@ glm::vec3 volumePos(-135, -126, -75);
 scg::Volume volume(256, 256, 256);
 scg::Volume temp(256, 256, 256);
 
-int type = 2;
+int type = 3;
 
 scg::Sampler sampler[20];
 
@@ -63,14 +63,16 @@ int main(int argc, char *argv[])
 
     // Load settings
     // TODO: move to class, add loader method from file
-    scg::settings.lightDir = glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f));
-    scg::settings.stepSize = 0.05f;
+    scg::settings.lightDir = glm::normalize(glm::vec3(1.0f, 0.5f, 1.0f));
+    scg::settings.stepSize = 0.1f;
+    scg::settings.stepSizeWoodcock = 0.5f;
     scg::settings.df = 0.5f;
     scg::settings.slice = 0;
     scg::settings.octreeLevels = 5;
     scg::settings.brackets = std::vector<int>{
         0, 1000, 1300, 1500, 1750, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2850, 3000, 3250, 3500, 99999 // 1 less than piecewise!
     };
+    scg::settings.maxOpacity.resize(scg::settings.brackets.size() - 1);
     scg::settings.minStepSize.resize(scg::settings.brackets.size() - 1);
     loadPiecewise();
 
@@ -130,7 +132,7 @@ void Draw(screen *screen)
 
             if (type == 1)
             {
-                color = scg::castRayFast(volume, ray);
+                color = scg::castRayFast(volume, ray) / gamma;
             }
             else if (type == 2)
             {
@@ -156,7 +158,7 @@ bool Update()
     float dt = float(t2 - t);
     t = t2;
     /*Good idea to remove this*/
-    std::cout << "Time: " << dt << " ms. " << std::endl;
+    std::cout << "Iterations: " << samples << ". Time: " << dt << " ms. " << std::endl;
 
     SDL_Event e;
     while (SDL_PollEvent(&e))
@@ -251,6 +253,7 @@ void loadPiecewise()
 //*
     for (int i = 0; i < (int)scg::settings.minStepSize.size(); ++i)
     {
+        scg::settings.maxOpacity[i] = 0;
         scg::settings.minStepSize[i] = 0;
     }
 //*/
@@ -268,10 +271,10 @@ void loadPiecewise()
                 {
                     scg::settings.mask |= (1 << bracket);
                     //*
-                    float maxCoef = std::fmaxf(scg::piecewise(minX).w, scg::piecewise(maxX).w);
-                    if (maxCoef > scg::settings.minStepSize[bracket])
+                    float maxOpacity = std::fmaxf(scg::piecewise(minX).w, scg::piecewise(maxX).w);
+                    if (maxOpacity > scg::settings.maxOpacity[bracket])
                     {
-                        scg::settings.minStepSize[bracket] = maxCoef;
+                        scg::settings.maxOpacity[bracket] = maxOpacity;
                     }
                     //*/
                 }
@@ -282,7 +285,7 @@ void loadPiecewise()
     for (int i = 0; i < (int)scg::settings.minStepSize.size(); ++i)
     {
         scg::settings.minStepSize[i] =
-            1.0f * scg::settings.minStepSize[i] + 0.1f * (1 - scg::settings.minStepSize[i]);
+            1.0f * scg::settings.maxOpacity[i] + 0.1f * (1 - scg::settings.maxOpacity[i]);
     }
 //*/
 }

@@ -100,12 +100,11 @@ struct State
 
 glm::vec3 castRayFast(Volume const& volume, Ray ray)
 {
-    //glm::vec3 pos;
     glm::vec3 color(0, 0, 0);
     float intensity = 1;
     float total = 0;
 
-    float stepSize = settings.stepSize;
+    //float stepSize = settings.stepSize;
 
     std::stack<State> st;
 
@@ -209,9 +208,9 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
             {
                 glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));
 
-                float newIntensity = intensity * std::exp(-out.w * stepSize * 1.0f);
+                float newIntensity = intensity * std::exp(-out.w * settings.densityScale * stepSize * 1.0f);
 
-                float light = std::max(glm::dot(normal, ray.dir/*settings.lightDir*/), 0.1f);
+                float light = std::max(glm::dot(normal, /*ray.dir*/settings.lightDir), 0.1f);
 
                 //glm::vec3 reflected = glm::normalize(glm::reflect(ray.dir, normal));
                 //float specularLow  = std::pow(glm::dot(-ray.dir, reflected), 10);
@@ -258,7 +257,6 @@ ScatterEvent castRayWoodcock(Volume const& volume, Ray const& ray, Sampler &samp
 {
     ScatterEvent scatterEvent;
 
-    //glm::vec3 pos;
     glm::vec3 color(0, 0, 0);
 
     Intersection intersection;
@@ -272,11 +270,11 @@ ScatterEvent castRayWoodcock(Volume const& volume, Ray const& ray, Sampler &samp
     float minT = std::max(ray.minT, intersection.nearT);
     float maxT = std::min(ray.maxT, intersection.farT);
 
-    float stepSize = 1.0f;//settings.stepSize;
+    minT += (-std::log(sampler.nextFloat())) * settings.stepSizeWoodcock;
 
-    minT += stepSize * (-std::log(sampler.nextFloat()));
+    float invMaxDensity = 1.0f;
 
-    while (minT < maxT)
+    while (minT <= maxT)
     {
         glm::vec3 pos = ray.origin + ray.dir * minT;
 
@@ -284,27 +282,148 @@ ScatterEvent castRayWoodcock(Volume const& volume, Ray const& ray, Sampler &samp
 
         glm::vec4 out = piecewise(coef);
 
-        if (sampler.nextFloat() < out.w * settings.densityScale * stepSize)
+        if (sampler.nextFloat() < out.w * invMaxDensity * settings.densityScale * settings.stepSizeWoodcock)
         {
             scatterEvent.isTrue = true;
             scatterEvent.t = minT;
             return scatterEvent;
         }
 
-        minT += stepSize * (-std::log(sampler.nextFloat()));
+        minT += (-std::log(sampler.nextFloat())) * invMaxDensity * settings.stepSizeWoodcock;
     }
 
     return scatterEvent;
 }
 
-ScatterEvent castRayWoodcock2(Volume const& volume, Ray const& ray, Sampler &sampler)
+ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Sampler &sampler)
+{
+    ScatterEvent scatterEvent;
+
+    glm::vec3 color(0, 0, 0);
+
+    std::stack<State> st;
+
+    Intersection intersection;
+    volume.octree.bb.getIntersection(ray, intersection);
+    if (intersection.valid)
+    {
+        st.push(State(&volume.octree, intersection.nearT, intersection.farT));
+    }
+
+    ray.minT +=  (-std::log(sampler.nextFloat())) * settings.stepSizeWoodcock;
+
+    while (!st.empty() && ray.minT <= ray.maxT)
+    {
+        State &state = st.top();
+        Octree const* node = state.node;
+
+        float minT = std::max(ray.minT, state.minT);
+        float maxT = std::min(ray.maxT, state.maxT);
+
+        // Ray was moved by a previous node
+        if (minT > maxT)
+        {
+            st.pop();
+            continue;
+        }
+
+        // Skip
+        if (!(node->mask & settings.mask))
+        {
+            // Jump into next node
+            ray.minT = maxT + dT;
+            st.pop();
+            continue;
+        }
+
+        // Continue 'recursively'
+        if (!node->isLeaf)
+        {
+            // Find first child
+            while(minT <= maxT)
+            {
+                glm::vec3 mid = node->bb.mid;
+                glm::vec3 entry = ray(minT);
+                glm::vec3 dist = entry - mid;
+
+                bool sideX = dist.x >= 0;
+                bool sideY = dist.y >= 0;
+                bool sideZ = dist.z >= 0;
+
+                int id = (sideX << 2) | (sideY << 1) | (sideZ);
+
+                // We need to jump over
+                if (state.nodesMask & (1 << id))
+                {
+                    minT += dT;
+                    ray.minT = minT + dT;
+                    continue;
+                }
+
+                node->nodes[id]->bb.getIntersection(ray, intersection);
+                state.nodesMask &= (1 << id);
+
+                // We need to jump over
+                if (!intersection.valid)
+                {
+                    minT += dT;
+                    ray.minT = minT + dT;
+                    continue;
+                }
+
+                st.push(State(node->nodes[id], intersection.nearT, intersection.farT));
+                break;
+            }
+
+            continue;
+        }
+
+        // Cast ray inside node
+//*
+        float maxOpacity = 0.0f;
+        for (int i = 0; i < (int)settings.maxOpacity.size(); ++i)
+        {
+            if (node->mask & (1 << i) && settings.maxOpacity[i] > maxOpacity)
+            {
+                maxOpacity = settings.maxOpacity[i];
+            }
+        }
+//*/
+        float invMaxOpacity = 1.0f;// / maxOpacity;
+        float invMaxOpacityDensity = invMaxOpacity / settings.densityScale;
+
+        while (minT <= maxT)
+        {
+            glm::vec3 pos = ray(minT);
+
+            float coef = sampleVolume(volume, pos);
+
+            glm::vec4 out = piecewise(coef);
+
+            if (sampler.nextFloat() < (out.w * settings.densityScale) * invMaxOpacity * settings.stepSizeWoodcock)
+            {
+                scatterEvent.isTrue = true;
+                scatterEvent.t = minT;
+                return scatterEvent;
+            }
+
+            minT += (-std::log(sampler.nextFloat())) * invMaxOpacity * settings.stepSizeWoodcock;
+        }
+
+        // Jump into next node
+        ray.minT = minT;
+        st.pop();
+    }
+
+    return scatterEvent;
+}
+
+ScatterEvent castRayWoodcock3(Volume const& volume, Ray const& ray, Sampler &sampler)
 {
     ScatterEvent scatterEvent;
 
     //glm::vec3 pos;
     glm::vec3 color(0, 0, 0);
-    float intensity = 1;
-    float total = 0;
 
     Intersection intersection;
     volume.octree.bb.getIntersection(ray, intersection);
@@ -317,9 +436,7 @@ ScatterEvent castRayWoodcock2(Volume const& volume, Ray const& ray, Sampler &sam
     float minT = std::max(ray.minT, intersection.nearT);
     float maxT = std::min(ray.maxT, intersection.farT);
 
-    float stepSize = 1.0f;//settings.stepSize;
-
-    minT += stepSize * (-std::log(sampler.nextFloat()));
+    minT += (-std::log(sampler.nextFloat())) * settings.stepSizeWoodcock;
 
     float const S = -std::log(sampler.nextFloat()) / settings.densityScale;
     float sum = 0.0f;
@@ -339,9 +456,9 @@ ScatterEvent castRayWoodcock2(Volume const& volume, Ray const& ray, Sampler &sam
         glm::vec4 out = piecewise(coef);
 
         sigmaT = out.w * settings.densityScale;
-        sum += sigmaT * stepSize;
+        sum += sigmaT * settings.stepSizeWoodcock;
 
-        minT += stepSize * (-std::log(sampler.nextFloat()));
+        minT += (-std::log(sampler.nextFloat())) * settings.stepSizeWoodcock;
     }
 
     scatterEvent.isTrue = true;
@@ -352,7 +469,7 @@ ScatterEvent castRayWoodcock2(Volume const& volume, Ray const& ray, Sampler &sam
 
 glm::vec3 singleScatter(Volume const& volume, Ray const& ray, int type, Sampler &sampler)
 {
-    ScatterEvent scatterEvent = (type == 1) ? castRayWoodcock(volume, ray, sampler) : castRayWoodcock2(volume, ray, sampler);
+    ScatterEvent scatterEvent = (type == 1) ? castRayWoodcock(volume, ray, sampler) : castRayWoodcockFast(volume, ray, sampler);
 
     if (!scatterEvent.isTrue)
     {
@@ -371,12 +488,11 @@ glm::vec3 singleScatter(Volume const& volume, Ray const& ray, int type, Sampler 
 
     if (true)
     {
-        glm::vec3 lightPos(-250, -250, -500);
-        Ray lightRay(pos, lightPos - pos);
+        Ray lightRay(pos, -settings.lightDir);
 
-        if (!((type == 1) ? castRayWoodcock(volume, lightRay, sampler).isTrue : castRayWoodcock2(volume, lightRay, sampler).isTrue))
+        if (!((type == 1) ? castRayWoodcock1(volume, lightRay, sampler).isTrue : castRayWoodcock2(volume, lightRay, sampler).isTrue))
         {
-            light = std::max(light, glm::dot(normal, -lightRay.dir));
+            light = std::max(light, glm::dot(normal, settings.lightDir));
         }
     }
 

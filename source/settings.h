@@ -15,6 +15,7 @@ public:
     glm::vec3 lightDir;
 
     float stepSize;
+    float stepSizeWoodcock;
     float df;
 
     float densityScale;
@@ -26,6 +27,7 @@ public:
     std::vector<std::pair<float, glm::vec4>> pieces;
 
     std::vector<int> brackets;
+    std::vector<float> maxOpacity;
     std::vector<float> minStepSize;
 
     int mask;
