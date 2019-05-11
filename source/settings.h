@@ -1,6 +1,8 @@
 #ifndef RAYTRACER_SETTINGS_H
 #define RAYTRACER_SETTINGS_H
 
+#include "transferfunction.h"
+
 #include <glm/glm.hpp>
 
 #include <utility>
@@ -25,6 +27,7 @@ public:
     int octreeLevels;
 
     std::vector<std::pair<float, glm::vec4>> pieces;
+    TransferFunction transferFunction;
 
     std::vector<int> brackets;
     std::vector<float> maxOpacity;

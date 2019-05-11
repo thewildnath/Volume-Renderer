@@ -25,12 +25,11 @@ add_executable(renderer
         source/sampler.h
         source/SDLauxiliary.h
         source/settings.h
-        source/utils.cpp
         source/utils.h
         source/volume.cpp
         source/volume.h
         include/tinytiff/tinytiffreader.cpp
-        include/tinytiff/tinytiffreader.h source/octree.cpp source/octree.h)
+        include/tinytiff/tinytiffreader.h source/octree.cpp source/octree.h source/transferfunction.h)
 
 find_library(SDL_LIB libsdl2 HINTS include/sdl/lib)
 target_link_libraries(renderer PUBLIC ${SDL_LIB})

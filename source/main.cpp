@@ -3,6 +3,7 @@
 #include "sampler.h"
 #include <SDLauxiliary.h>
 #include <settings.h>
+#include "transferfunction.h"
 #include <utils.h>
 #include <volume.h>
 
@@ -29,7 +30,7 @@
 /* FUNCTIONS                                                                   */
 bool Update();
 void Draw(screen *screen);
-void loadPiecewise();
+void loadTransferFunction();
 void loadBrain(scg::Volume& volume);
 void loadHead(scg::Volume& volume);
 void InitialiseBuffer();
@@ -74,7 +75,7 @@ int main(int argc, char *argv[])
     };
     scg::settings.maxOpacity.resize(scg::settings.brackets.size() - 1);
     scg::settings.minStepSize.resize(scg::settings.brackets.size() - 1);
-    loadPiecewise();
+    loadTransferFunction();
 
     // Load volume
     loadBrain(volume);
@@ -212,7 +213,7 @@ bool Update()
                     InitialiseBuffer();
                     break;
                 case SDLK_r:
-                    loadPiecewise();
+                    loadTransferFunction();
                     InitialiseBuffer();
                     break;
                 case SDLK_1:
@@ -236,10 +237,12 @@ bool Update()
     return true;
 }
 
-void loadPiecewise()
+void loadTransferFunction()
 {
     std::ifstream fin;
     fin.open("transfer.txt");
+
+    std::vector<scg::Node> nodes;
 
     scg::settings.pieces.clear();
     float x, a, r, g, b;
@@ -248,8 +251,11 @@ void loadPiecewise()
 
     while (fin >> x >> a >> r >> g >> b)
     {
+        nodes.emplace_back(scg::Node{x, a, {r, g, b}});
         scg::settings.pieces.push_back(std::make_pair(x, glm::vec4(r, g, b, a)));
     }
+
+    scg::settings.transferFunction = scg::TransferFunction(nodes);
 //*
     for (int i = 0; i < (int)scg::settings.minStepSize.size(); ++i)
     {
