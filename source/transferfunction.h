@@ -67,26 +67,6 @@ public:
     }
 };
 
-/*
-inline glm::vec4 piecewise(float coef)
-{
-    int index = 0;
-    while(settings.pieces[index + 1].first <= coef)
-        ++index;
-
-    float dx = settings.pieces[index + 1].first - settings.pieces[index].first;
-    float dist = (coef - settings.pieces[index].first) / dx;
-
-    glm::vec4 out = glm::vec4(
-        settings.pieces[index].second.x * (1 - dist) + settings.pieces[index + 1].second.x * dist,
-        settings.pieces[index].second.y * (1 - dist) + settings.pieces[index + 1].second.y * dist,
-        settings.pieces[index].second.z * (1 - dist) + settings.pieces[index + 1].second.z * dist,
-        settings.pieces[index].second.w * (1 - dist) + settings.pieces[index + 1].second.w * dist);
-
-    return out;
-}
- */
-
 }
 
 #endif //RAYTRACER_TRANSFERFUNCTION_H

@@ -26,7 +26,6 @@ public:
 
     int octreeLevels;
 
-    std::vector<std::pair<float, glm::vec4>> pieces;
     TransferFunction transferFunction;
 
     std::vector<int> brackets;

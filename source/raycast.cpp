@@ -56,7 +56,7 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray)
 
         float coef = sampleVolume(volume, pos);
 
-        glm::vec4 out = settings.transferFunction.evaluate(coef);//piecewise(coef);
+        glm::vec4 out = settings.transferFunction.evaluate(coef);
 
         if (out.w)
         {
@@ -202,7 +202,7 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray)
 
             float coef = sampleVolume(volume, pos);
 
-            glm::vec4 out = settings.transferFunction.evaluate(coef);//piecewise(coef);
+            glm::vec4 out = settings.transferFunction.evaluate(coef);
 
             if (out.w)
             {
@@ -280,7 +280,7 @@ ScatterEvent castRayWoodcock(Volume const& volume, Ray const& ray, Sampler &samp
 
         float coef = sampleVolume(volume, pos);
 
-        glm::vec4 out = settings.transferFunction.evaluate(coef);//piecewise(coef);
+        glm::vec4 out = settings.transferFunction.evaluate(coef);
 
         if (sampler.nextFloat() < out.w * invMaxDensity * settings.densityScale * settings.stepSizeWoodcock)
         {
@@ -398,7 +398,7 @@ ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Sampler &sampler
 
             float coef = sampleVolume(volume, pos);
 
-            glm::vec4 out = settings.transferFunction.evaluate(coef);//piecewise(coef);
+            glm::vec4 out = settings.transferFunction.evaluate(coef);
 
             if (sampler.nextFloat() < (out.w * settings.densityScale) * invMaxOpacity * settings.stepSizeWoodcock)
             {
@@ -453,7 +453,7 @@ ScatterEvent castRayWoodcock3(Volume const& volume, Ray const& ray, Sampler &sam
 
         float coef = sampleVolume(volume, pos);
 
-        glm::vec4 out = settings.transferFunction.evaluate(coef);//piecewise(coef);
+        glm::vec4 out = settings.transferFunction.evaluate(coef);
 
         sigmaT = out.w * settings.densityScale;
         sum += sigmaT * settings.stepSizeWoodcock;
@@ -482,7 +482,7 @@ glm::vec3 singleScatter(Volume const& volume, Ray const& ray, int type, Sampler 
 
     float coef = sampleVolume(volume, pos);
 
-    glm::vec4 out = piecewise(coef);
+    glm::vec4 out = settings.transferFunction.evaluate(coef);
 
     float light = 0.1f;
 

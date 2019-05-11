@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     scg::settings.slice = 0;
     scg::settings.octreeLevels = 5;
     scg::settings.brackets = std::vector<int>{
-        0, 1000, 1300, 1500, 1750, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2850, 3000, 3250, 3500, 99999 // 1 less than piecewise!
+        0, 1000, 1300, 1500, 1750, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2850, 3000, 3250, 3500, 99999 // 1 less than TF!
     };
     scg::settings.maxOpacity.resize(scg::settings.brackets.size() - 1);
     scg::settings.minStepSize.resize(scg::settings.brackets.size() - 1);
@@ -244,7 +244,6 @@ void loadTransferFunction()
 
     std::vector<scg::Node> nodes;
 
-    scg::settings.pieces.clear();
     float x, a, r, g, b;
 
     fin >> scg::settings.densityScale;
@@ -252,7 +251,6 @@ void loadTransferFunction()
     while (fin >> x >> a >> r >> g >> b)
     {
         nodes.emplace_back(scg::Node{x, a, {r, g, b}});
-        scg::settings.pieces.push_back(std::make_pair(x, glm::vec4(r, g, b, a)));
     }
 
     scg::settings.transferFunction = scg::TransferFunction(nodes);
@@ -264,20 +262,20 @@ void loadTransferFunction()
     }
 //*/
     scg::settings.mask = 0;
-    for (int i = 0; i < (int)scg::settings.pieces.size() - 1; ++i)
+    for (size_t i = 0; i < nodes.size() - 1; ++i)
     {
-        if (scg::settings.pieces[i].second.w > 0 || scg::settings.pieces[i + 1].second.w > 0)
+        if (nodes[i].opacity > 0 || nodes[i + 1].opacity > 0)
         {
             for (int bracket = 0; bracket < (int)scg::settings.brackets.size() - 1; ++bracket)
             {
-                float minX = std::fmaxf(scg::settings.pieces[i].first, scg::settings.brackets[bracket]);
-                float maxX = std::fminf(scg::settings.pieces[i + 1].first, scg::settings.brackets[bracket + 1]);
+                float minX = std::fmaxf(nodes[i].intensity, scg::settings.brackets[bracket]);
+                float maxX = std::fminf(nodes[i + 1].intensity, scg::settings.brackets[bracket + 1]);
 
                 if (minX < maxX)
                 {
                     scg::settings.mask |= (1 << bracket);
                     //*
-                    float maxOpacity = std::fmaxf(scg::piecewise(minX).w, scg::piecewise(maxX).w);
+                    float maxOpacity = std::fmaxf(scg::settings.transferFunction.evaluate(minX).w, scg::settings.transferFunction.evaluate(maxX).w);
                     if (maxOpacity > scg::settings.maxOpacity[bracket])
                     {
                         scg::settings.maxOpacity[bracket] = maxOpacity;
