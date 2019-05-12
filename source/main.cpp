@@ -44,8 +44,6 @@ glm::vec3 volumePos(-135, -126, -75);
 scg::Volume volume(256, 256, 256);
 scg::Volume temp(256, 256, 256);
 
-int type = 3;
-
 scg::Sampler sampler[20];
 
 scg::Settings settings;
@@ -123,21 +121,9 @@ void Draw(screen *screen)
 
             scg::Ray ray(origin, dir, 0, 500);
 
-            glm::vec3 color;
             float gamma = 2.0f;
 
-            if (type == 1)
-            {
-                color = scg::castRayFast(volume, ray, settings) / gamma;
-            }
-            else if (type == 2)
-            {
-                color = scg::singleScatter(volume, ray, 1, settings, sampler[omp_get_thread_num()]);
-            }
-            else// if (type == 3)
-            {
-                color = scg::singleScatter(volume, ray, 2, settings, sampler[omp_get_thread_num()]);
-            }
+            glm::vec3 color = scg::singleScatter(volume, ray, settings, sampler[omp_get_thread_num()]);
 
             buffer[y][x] += color * gamma;
             PutPixelSDL(screen, x, y, buffer[y][x] / (float)samples);
@@ -209,18 +195,6 @@ bool Update()
                     break;
                 case SDLK_r:
                     loadTransferFunction();
-                    InitialiseBuffer();
-                    break;
-                case SDLK_1:
-                    type = 1;
-                    InitialiseBuffer();
-                    break;
-                case SDLK_2:
-                    type = 2;
-                    InitialiseBuffer();
-                    break;
-                case SDLK_3:
-                    type = 3;
                     InitialiseBuffer();
                     break;
                 case SDLK_ESCAPE:
