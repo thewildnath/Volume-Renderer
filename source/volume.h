@@ -3,9 +3,6 @@
 
 #include <octree.h>
 
-#include <algorithm>
-#include <cmath>
-
 #define SIZE 256
 
 namespace scg

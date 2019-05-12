@@ -28,7 +28,7 @@ public:
 
     TransferFunction transferFunction;
 
-    std::vector<int> brackets;
+    std::vector<float> brackets;
     std::vector<float> maxOpacity;
     std::vector<float> minStepSize;
 

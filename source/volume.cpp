@@ -11,17 +11,14 @@ namespace scg
 
 float eps = 2;
 
-Volume::Volume(int height, int width, int depth)
+Volume::Volume(int height, int width, int depth):
+    height(height), width(width), depth(depth)
 {
-    this->height = height;
-    this->width = width;
-    this->depth = depth;
+    //this->data = new int[depth, height, width];
 
     this->octree = Octree(
         BoundingBox(glm::vec3(0 + eps, 0 + eps, 0 + eps), glm::vec3(230 - eps, 220 - eps, 135 - eps))
     );
-
-    //this->data = new int[depth, height, width];
 }
 
 void buildOctree(Volume const& volume, Octree &octree, int levels)

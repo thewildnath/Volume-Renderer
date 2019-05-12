@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     scg::settings.df = 0.5f;
     scg::settings.slice = 0;
     scg::settings.octreeLevels = 5;
-    scg::settings.brackets = std::vector<int>{
+    scg::settings.brackets = std::vector<float>{
         0, 1000, 1300, 1500, 1750, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2850, 3000, 3250, 3500, 99999 // 1 less than TF!
     };
     scg::settings.maxOpacity.resize(scg::settings.brackets.size() - 1);
