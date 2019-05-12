@@ -22,9 +22,9 @@ inline glm::vec3 getNormal(scg::Volume const &volume, glm::vec3 const &pos, floa
     glm::vec3 deltaZ(0, 0, eps);
 
     return glm::vec3(
-        sampleVolume(volume, pos + deltaX) - sampleVolume(volume, pos - deltaX),
-        sampleVolume(volume, pos + deltaY) - sampleVolume(volume, pos - deltaY),
-        sampleVolume(volume, pos + deltaZ) - sampleVolume(volume, pos - deltaZ));
+        volume.sampleVolume(pos + deltaX) - volume.sampleVolume(pos - deltaX),
+        volume.sampleVolume(pos + deltaY) - volume.sampleVolume(pos - deltaY),
+        volume.sampleVolume(pos + deltaZ) - volume.sampleVolume(pos - deltaZ));
 }
 
 glm::vec3 castRay(Volume const& volume, Ray const& ray, Settings const& settings)
@@ -54,7 +54,7 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray, Settings const& settings
 
         glm::vec3 pos = ray.origin + ray.dir * minT;
 
-        float coef = sampleVolume(volume, pos);
+        float coef = volume.sampleVolume(pos);
 
         glm::vec4 out = settings.transferFunction.evaluate(coef);
 
@@ -200,7 +200,7 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray, Settings const& settings)
 
             glm::vec3 pos = ray(minT);
 
-            float coef = sampleVolume(volume, pos);
+            float coef = volume.sampleVolume(pos);
 
             glm::vec4 out = settings.transferFunction.evaluate(coef);
 
@@ -278,7 +278,7 @@ ScatterEvent castRayWoodcock(Volume const& volume, Ray const& ray, Settings cons
     {
         glm::vec3 pos = ray.origin + ray.dir * minT;
 
-        float coef = sampleVolume(volume, pos);
+        float coef = volume.sampleVolume(pos);
 
         glm::vec4 out = settings.transferFunction.evaluate(coef);
 
@@ -396,7 +396,7 @@ ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Settings const& 
         {
             glm::vec3 pos = ray(minT);
 
-            float coef = sampleVolume(volume, pos);
+            float coef = volume.sampleVolume(pos);
 
             glm::vec4 out = settings.transferFunction.evaluate(coef);
 
@@ -418,55 +418,6 @@ ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Settings const& 
     return scatterEvent;
 }
 
-ScatterEvent castRayWoodcock3(Volume const& volume, Ray const& ray, Settings const& settings, Sampler &sampler)
-{
-    ScatterEvent scatterEvent;
-
-    //glm::vec3 pos;
-    glm::vec3 color(0, 0, 0);
-
-    Intersection intersection;
-    volume.octree.bb.getIntersection(ray, intersection);
-
-    if (!intersection.valid)
-    {
-        return scatterEvent;
-    }
-
-    float minT = std::max(ray.minT, intersection.nearT);
-    float maxT = std::min(ray.maxT, intersection.farT);
-
-    minT += (-std::log(sampler.nextFloat())) * settings.stepSizeWoodcock;
-
-    float const S = -std::log(sampler.nextFloat()) / settings.densityScale;
-    float sum = 0.0f;
-    float sigmaT = 0.0f;
-
-    while (sum < S)
-    {
-        if (minT > maxT)
-        {
-            return scatterEvent;
-        }
-
-        glm::vec3 pos = ray.origin + ray.dir * minT;
-
-        float coef = sampleVolume(volume, pos);
-
-        glm::vec4 out = settings.transferFunction.evaluate(coef);
-
-        sigmaT = out.w * settings.densityScale;
-        sum += sigmaT * settings.stepSizeWoodcock;
-
-        minT += (-std::log(sampler.nextFloat())) * settings.stepSizeWoodcock;
-    }
-
-    scatterEvent.isTrue = true;
-    scatterEvent.t = minT;
-
-    return scatterEvent;
-}
-
 glm::vec3 singleScatter(Volume const& volume, Ray const& ray, int type, Settings const& settings, Sampler &sampler)
 {
     ScatterEvent scatterEvent = (type == 1) ? castRayWoodcock(volume, ray, settings, sampler) : castRayWoodcockFast(volume, ray, settings, sampler);
@@ -480,7 +431,7 @@ glm::vec3 singleScatter(Volume const& volume, Ray const& ray, int type, Settings
 
     glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));
 
-    float coef = sampleVolume(volume, pos);
+    float coef = volume.sampleVolume(pos);
 
     glm::vec4 out = settings.transferFunction.evaluate(coef);
 

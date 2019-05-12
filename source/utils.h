@@ -1,13 +1,13 @@
 #ifndef COMS30115_UTILITY_H
 #define COMS30115_UTILITY_H
 
+#include "volume.h"
+#include "settings.h"
+
 namespace scg
 {
 
-inline float lerp(float value1, float value2, float weight)
-{
-    return value1 * (1.0f - weight) + value2 * weight;
-}
+void loadBrain(Volume& volume, Volume& temp, Settings const& settings);
 
 }
 

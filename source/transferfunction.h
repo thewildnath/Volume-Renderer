@@ -1,7 +1,7 @@
 #ifndef RAYTRACER_TRANSFERFUNCTION_H
 #define RAYTRACER_TRANSFERFUNCTION_H
 
-#include "utils.h"
+#include "math_utils.h"
 
 #include "glm/glm.hpp"
 
@@ -44,12 +44,7 @@ public:
     TransferFunction(std::vector<Node> const& nodes):
         nodes(nodes) {};
 
-    size_t size() const
-    {
-        return nodes.size();
-    }
-
-    glm::vec4 evaluate(float intensity) const
+    inline glm::vec4 evaluate(float intensity) const
     {
         auto const& upper = std::upper_bound(nodes.begin(), nodes.end(), intensity);
         auto const& lower = upper - 1;
