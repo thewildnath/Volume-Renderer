@@ -1,7 +1,7 @@
 #ifndef RAYTRACER_RAY_H
 #define RAYTRACER_RAY_H
 
-#include <glm/glm.hpp>
+#include "vector_type.h"
 
 namespace scg
 {
@@ -9,17 +9,17 @@ namespace scg
 class Ray
 {
 public:
-    glm::vec3 origin;
-    glm::vec3 dir;
+    Vec3f origin;
+    Vec3f dir;
 
     float minT;
     float maxT;
 
-    Ray(glm::vec3 const&, glm::vec3 const&);
+    Ray(Vec3f const&, Vec3f const&);
 
-    Ray(glm::vec3 const&, glm::vec3 const&, float, float);
+    Ray(Vec3f const&, Vec3f const&, float, float);
 
-    glm::vec3 operator()(float t) const
+    Vec3f operator()(float t) const
     {
         return this->origin + this->dir * t;
     }

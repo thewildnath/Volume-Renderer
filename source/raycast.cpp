@@ -1,12 +1,11 @@
-#include <raycast.h>
+#include "raycast.h"
 
-#include <boundingbox.h>
-#include <octree.h>
-#include <ray.h>
-#include <settings.h>
-#include <volume.h>
-
-#include <glm/glm.hpp>
+#include "boundingbox.h"
+#include "octree.h"
+#include "ray.h"
+#include "settings.h"
+#include "volume.h"
+#include "vector_type.h"
 
 #include <algorithm>
 #include <iostream>
@@ -52,7 +51,7 @@ ScatterEvent castRayWoodcock(Volume const& volume, Ray const& ray, Settings cons
 {
     ScatterEvent scatterEvent;
 
-    glm::vec3 color(0, 0, 0);
+    Vec3f color(0, 0, 0);
 
     Intersection intersection;
     volume.octree.bb.getIntersection(ray, intersection);
@@ -71,11 +70,11 @@ ScatterEvent castRayWoodcock(Volume const& volume, Ray const& ray, Settings cons
 
     while (minT <= maxT)
     {
-        glm::vec3 pos = ray.origin + ray.dir * minT;
+        Vec3f pos = ray.origin + ray.dir * minT;
 
         float coef = volume.sampleVolume(pos);
 
-        glm::vec4 out = settings.transferFunction.evaluate(coef);
+        Vec4f out = settings.transferFunction.evaluate(coef);
 
         if (sampler.nextFloat() < out.w * invMaxDensity * settings.densityScale * settings.stepSizeWoodcock)
         {
@@ -94,7 +93,7 @@ ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Settings const& 
 {
     ScatterEvent scatterEvent;
 
-    glm::vec3 color(0, 0, 0);
+    Vec3f color(0, 0, 0);
 
     std::stack<State> st;
 
@@ -137,9 +136,9 @@ ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Settings const& 
             // Find first child
             while(minT <= maxT)
             {
-                glm::vec3 mid = node->bb.mid;
-                glm::vec3 entry = ray(minT);
-                glm::vec3 dist = entry - mid;
+                Vec3f mid = node->bb.mid;
+                Vec3f entry = ray(minT);
+                Vec3f dist = entry - mid;
 
                 bool sideX = dist.x >= 0;
                 bool sideY = dist.y >= 0;
@@ -189,11 +188,11 @@ ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Settings const& 
 
         while (minT <= maxT)
         {
-            glm::vec3 pos = ray(minT);
+            Vec3f pos = ray(minT);
 
             float coef = volume.sampleVolume(pos);
 
-            glm::vec4 out = settings.transferFunction.evaluate(coef);
+            Vec4f out = settings.transferFunction.evaluate(coef);
 
             if (sampler.nextFloat() < (out.w * settings.densityScale) * invMaxOpacity * settings.stepSizeWoodcock)
             {
@@ -213,22 +212,22 @@ ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Settings const& 
     return scatterEvent;
 }
 
-glm::vec3 singleScatter(Volume const& volume, Ray const& ray, Settings const& settings, Sampler &sampler)
+Vec3f singleScatter(Volume const& volume, Ray const& ray, Settings const& settings, Sampler &sampler)
 {
     ScatterEvent scatterEvent = castRayWoodcockFast(volume, ray, settings, sampler);
 
     if (!scatterEvent.isTrue)
     {
-        return glm::vec3(0, 0, 0); // Background
+        return Vec3f(0, 0, 0); // Background
     }
 
-    glm::vec3 pos = ray(scatterEvent.t);
+    Vec3f pos = ray(scatterEvent.t);
 
-    glm::vec3 normal = glm::normalize(volume.getNormal(pos, 0.5f));
+    Vec3f normal = normalise(volume.getNormal(pos, 0.5f));
 
     float coef = volume.sampleVolume(pos);
 
-    glm::vec4 out = settings.transferFunction.evaluate(coef);
+    Vec4f out = settings.transferFunction.evaluate(coef);
 
     float light = 0.1f;
 
@@ -238,15 +237,15 @@ glm::vec3 singleScatter(Volume const& volume, Ray const& ray, Settings const& se
 
         if (!castRayWoodcockFast(volume, lightRay, settings, sampler).isTrue)
         {
-            light = std::max(light, glm::dot(normal, settings.lightDir));
+            light = std::max(light, dot(normal, settings.lightDir));
         }
     }
 
-    //glm::vec3 reflected = glm::normalize(glm::reflect(ray.dir, normal));
+    //Vec3f reflected = glm::normalize(glm::reflect(ray.dir, normal));
     //float specularLow  = std::pow(glm::dot(-ray.dir, reflected), 10);
     //float specularHigh = std::pow(glm::dot(-ray.dir, reflected), 500);
 
-    glm::vec3 color = (light * glm::vec3(out.x, out.y,  out.z) * 1.0f);// + specularLow * 20.0f + specularHigh * 50.0f);
+    Vec3f color = (Vec3f(out.x, out.y,  out.z) * light * 1.0f);// + specularLow * 20.0f + specularHigh * 50.0f);
     return color / 255.0f;
 }
 

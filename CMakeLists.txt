@@ -9,7 +9,6 @@ set(CMAKE_CXX_FLAGS "-Ofast -Wall -Wextra -fopenmp -march=native -ffast-math")
 #SET(LINK_FLAGS "-lmingw32 -lSDLmain -lSDL -mwindows")
 #SET(CMAKE_EXE_LINKER_FLAGS "${LINK_FLAGS}")
 
-include_directories(include/glm)
 include_directories(include/sdl/include/SDL2)
 include_directories(include/tinytiff)
 include_directories(source)
@@ -28,6 +27,7 @@ add_executable(renderer
         source/utils.h
         source/volume.cpp
         source/volume.h
+        source/vector_type.h
         include/tinytiff/tinytiffreader.cpp
         include/tinytiff/tinytiffreader.h source/octree.cpp source/octree.h source/transferfunction.h source/utils.cpp source/math_utils.h)
 

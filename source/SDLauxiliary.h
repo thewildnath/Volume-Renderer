@@ -1,10 +1,12 @@
 #ifndef SDL_AUXILIARY_H
 #define SDL_AUXILIARY_H
 
+#include "vector_type.h"
+
 #include "SDL.h"
+
 #include <iostream>
-#include <glm/glm.hpp>
-#include <stdint.h>
+#include <cstdint>
 #include <cstring>
 
 typedef struct{
@@ -17,7 +19,7 @@ typedef struct{
 } screen;
 
 screen* InitializeSDL( int width, int height, bool fullscreen = false );
-void PutPixelSDL( screen *s, int x, int y, glm::vec3 color );
+void PutPixelSDL( screen *s, int x, int y, scg::Vec3f color );
 void SDL_Renderframe(screen *s);
 void KillSDL(screen* s);
 void SDL_SaveImage(screen *s, const char* filename);
@@ -146,16 +148,16 @@ screen* InitializeSDL(int width,int height, bool fullscreen)
     return s;
 }
 
-void PutPixelSDL(screen* s, int x, int y, glm::vec3 colour)
+void PutPixelSDL(screen* s, int x, int y, scg::Vec3f colour)
 {
     if(x<0 || x>=s->width || y<0 || y>=s->height)
     {
         std::cout << "apa" << std::endl;
         return;
     }
-    uint32_t r = uint32_t( glm::clamp( 255*colour.r, 0.f, 255.f ) );
-    uint32_t g = uint32_t( glm::clamp( 255*colour.g, 0.f, 255.f ) );
-    uint32_t b = uint32_t( glm::clamp( 255*colour.b, 0.f, 255.f ) );
+    uint32_t r = uint32_t( scg::clamp( 255*colour.r, 0.f, 255.f ) );
+    uint32_t g = uint32_t( scg::clamp( 255*colour.g, 0.f, 255.f ) );
+    uint32_t b = uint32_t( scg::clamp( 255*colour.b, 0.f, 255.f ) );
 
     s->buffer[y*s->width+x] = (128<<24) + (r<<16) + (g<<8) + b;
 }

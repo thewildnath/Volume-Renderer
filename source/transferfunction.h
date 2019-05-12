@@ -2,8 +2,7 @@
 #define RAYTRACER_TRANSFERFUNCTION_H
 
 #include "math_utils.h"
-
-#include "glm/glm.hpp"
+#include "vector_type.h"
 
 #include <iostream>
 #include <algorithm>
@@ -19,12 +18,12 @@ public:
     float intensity;
     float opacity;
 
-    glm::vec3 colour;
+    Vec3f colour;
 
     friend class TransferFunction;
 
 public:
-    Node(float intensity, float opacity, glm::vec3 const& colour):
+    Node(float intensity, float opacity, Vec3f const& colour):
         intensity(intensity), opacity(opacity), colour(colour) {};
 };
 
@@ -45,7 +44,7 @@ public:
     TransferFunction(std::vector<Node> const& nodes):
         nodes(nodes) {};
 
-    inline glm::vec4 evaluate(float intensity) const
+    inline Vec4f evaluate(float intensity) const
     {
         auto const& upper = std::upper_bound(nodes.begin(), nodes.end(), intensity);
         auto const& lower = upper - 1;
@@ -53,7 +52,7 @@ public:
         float dx = (*upper).intensity - (*lower).intensity;
         float dist = (intensity - (*lower).intensity) / dx;
 
-        glm::vec4 out = glm::vec4(
+        Vec4f out = Vec4f(
             lerp((*lower).colour.x, (*upper).colour.x, dist),
             lerp((*lower).colour.y, (*upper).colour.y, dist),
             lerp((*lower).colour.z, (*upper).colour.z, dist),

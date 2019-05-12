@@ -22,7 +22,7 @@ public:
 
     Volume(int height, int width, int depth);
 
-    inline float sampleVolume(glm::vec3 const &pos) const
+    inline float sampleVolume(Vec3f const &pos) const
     {
         int px = (int)(pos.x - 0.5f);
         int py = (int)(pos.y - 0.5f);
@@ -54,13 +54,13 @@ public:
         return coef;
     }
 
-    inline glm::vec3 getNormal(glm::vec3 const &pos, float eps) const
+    inline Vec3f getNormal(Vec3f const &pos, float eps) const
     {
-        glm::vec3 deltaX(eps, 0, 0);
-        glm::vec3 deltaY(0, eps, 0);
-        glm::vec3 deltaZ(0, 0, eps);
+        Vec3f deltaX(eps, 0, 0);
+        Vec3f deltaY(0, eps, 0);
+        Vec3f deltaZ(0, 0, eps);
 
-        return glm::vec3(
+        return Vec3f(
             sampleVolume(pos + deltaX) - sampleVolume(pos - deltaX),
             sampleVolume(pos + deltaY) - sampleVolume(pos - deltaY),
             sampleVolume(pos + deltaZ) - sampleVolume(pos - deltaZ));

@@ -47,8 +47,8 @@ void loadBrain(scg::Volume& volume, scg::Volume& temp, scg::Settings const& sett
         {
             for (int z = 0; z < volume.height; ++z)
             {
-                //volume.data[z][y][x] = (int)std::round(scg::sampleVolume(temp, glm::vec3(z, y, x / 1.3f)));
-                volume.data[z][y][x] = (int)std::round(temp.sampleVolume(glm::vec3(z, y, x / 1.3f)));
+                //volume.data[z][y][x] = (int)std::round(scg::sampleVolume(temp, Vec3f(z, y, x / 1.3f)));
+                volume.data[z][y][x] = (int)std::round(temp.sampleVolume(Vec3f(z, y, x / 1.3f)));
             }
         }
     }

@@ -2,8 +2,7 @@
 #define RAYTRACER_SETTINGS_H
 
 #include "transferfunction.h"
-
-#include <glm/glm.hpp>
+#include "vector_type.h"
 
 #include <utility>
 #include <vector>
@@ -14,7 +13,7 @@ namespace scg
 class Settings
 {
 public:
-    glm::vec3 lightDir;
+    Vec3f lightDir;
 
     float stepSize;
     float stepSizeWoodcock;

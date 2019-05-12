@@ -1,8 +1,6 @@
-#include <octree.h>
+#include "octree.h"
 
-#include <boundingbox.h>
-
-#include <glm/glm.hpp>
+#include "boundingbox.h"
 
 namespace scg
 {

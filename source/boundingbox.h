@@ -1,9 +1,10 @@
 #ifndef RAYTRACER_BOUNDINGBOX_H
 #define RAYTRACER_BOUNDINGBOX_H
 
-#include <ray.h>
+#include "ray.h"
+#include "vector_type.h"
 
-#include <glm/glm.hpp>
+#include <limits>
 
 namespace scg
 {
@@ -27,7 +28,7 @@ public:
         this->valid		= false;
         this->front		= true;
         this->nearT		= 0.0f;
-        this->farT		= FLT_MAX;
+        this->farT		= std::numeric_limits<float>::max();
     }
 
     Intersection& operator = (const Intersection& Other)
@@ -49,13 +50,13 @@ public:
 class BoundingBox
 {
 public:
-    glm::vec3 min;
-    glm::vec3 max;
-    glm::vec3 mid;
+    Vec3f min;
+    Vec3f max;
+    Vec3f mid;
 
     BoundingBox() {};
 
-    BoundingBox(glm::vec3 const&, glm::vec3 const&);
+    BoundingBox(Vec3f const&, Vec3f const&);
 
     void getIntersection(Ray const& ray, Intersection &) const;
 };

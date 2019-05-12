@@ -1,15 +1,15 @@
-#include <ray.h>
-#include <raycast.h>
+#include "ray.h"
+#include "raycast.h"
 #include "sampler.h"
-#include <SDLauxiliary.h>
-#include <settings.h>
+#include "SDLauxiliary.h"
+#include "settings.h"
 #include "transferfunction.h"
-#include <utils.h>
-#include <volume.h>
+#include "utils.h"
+#include "vector_type.h"
+#include "volume.h"
 
-#include <glm/glm.hpp>
-#include <tinytiffreader.h>
-#include <SDL.h>
+#include "SDL.h"
+#include "tinytiffreader.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -37,10 +37,10 @@ int focalLength = RES;
 float fovH = 1;
 float fovV = 1;
 
-glm::vec4 cameraPos(0, 0, -256, 1);
+scg::Vec3f cameraPos(0, 0, -256);
 float angle = -15;
 
-glm::vec3 volumePos(-135, -126, -75);
+scg::Vec3f volumePos(-135, -126, -75);
 scg::Volume volume(256, 256, 256);
 scg::Volume temp(256, 256, 256);
 
@@ -49,7 +49,7 @@ scg::Sampler sampler[20];
 scg::Settings settings;
 
 int samples;
-glm::vec3 buffer[SCREEN_HEIGHT][SCREEN_WIDTH];
+scg::Vec3f buffer[SCREEN_HEIGHT][SCREEN_WIDTH];
 
 int main(int argc, char *argv[])
 {
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 
     // Load settings
     // TODO: move to class, add loader method from file
-    settings.lightDir = glm::normalize(glm::vec3(1.0f, 0.5f, 1.0f));
+    settings.lightDir = scg::normalise(scg::Vec3f(1.0f, 0.5f, 1.0f));
     settings.stepSize = 0.1f;
     settings.stepSizeWoodcock = 1.0f;
     settings.slice = 0;
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-glm::vec3 rotate(glm::vec3 p, float angle)
+scg::Vec3f rotate(scg::Vec3f p, float angle)
 {
     angle = angle * 3.14159265f / 180;
     float s = (float)sin(angle);
@@ -96,7 +96,7 @@ glm::vec3 rotate(glm::vec3 p, float angle)
     float xnew = p.x * c - p.z * s;
     float znew = p.x * s + p.z * c;
 
-    return glm::vec3(xnew, p.y, znew);
+    return scg::Vec3f(xnew, p.y, znew);
 }
 
 /*Place your drawing here*/
@@ -112,8 +112,8 @@ void Draw(screen *screen)
     {
         for (int x = 0; x < SCREEN_WIDTH; ++x)
         {
-            glm::vec3 origin = rotate(glm::vec3(cameraPos), angle) - volumePos;
-            glm::vec3 dir(
+            scg::Vec3f origin = rotate(scg::Vec3f(cameraPos), angle) - volumePos;
+            scg::Vec3f dir(
                 ((float)x - (float)(SCREEN_WIDTH - 1) / 2) * fovH,
                 ((float)y - (float)(SCREEN_HEIGHT - 1) / 2) * fovV,
                 focalLength);
@@ -123,10 +123,11 @@ void Draw(screen *screen)
 
             float gamma = 2.0f;
 
-            glm::vec3 color = scg::singleScatter(volume, ray, settings, sampler[omp_get_thread_num()]);
+            scg::Vec3f color = scg::singleScatter(volume, ray, settings, sampler[omp_get_thread_num()]);
 
             buffer[y][x] += color * gamma;
-            PutPixelSDL(screen, x, y, buffer[y][x] / (float)samples);
+            color = buffer[y][x] / (float)samples;
+            PutPixelSDL(screen, x, y, scg::Vec3f{color.r, color.g, color.b});
         }
     }
 }
