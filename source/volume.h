@@ -41,15 +41,15 @@ public:
         float c110 = data[px + 1][py + 1][pz];
         float c111 = data[px + 1][py + 1][pz + 1];
 
-        float c00 = c000 * (1 - dx) + c100 * dx;
-        float c01 = c001 * (1 - dx) + c101 * dx;
-        float c10 = c010 * (1 - dx) + c110 * dx;
-        float c11 = c011 * (1 - dx) + c111 * dx;
+        float c00 = lerp(c000, c100, dx);
+        float c01 = lerp(c001, c101, dx);
+        float c10 = lerp(c010, c110, dx);
+        float c11 = lerp(c011, c111, dx);
 
-        float c0 = c00 * (1 - dy) + c10 * dy;
-        float c1 = c01 * (1 - dy) + c11 * dy;
+        float c0 = lerp(c00, c10, dy);
+        float c1 = lerp(c01, c11, dy);
 
-        float coef =  c0 * (1 - dz) + c1 * dz;
+        float coef =  lerp(c0, c1, dz);
 
         return coef;
     }

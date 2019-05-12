@@ -16,13 +16,10 @@ public:
         this->SetInvalid();
     }
 
-    void SetValid(float NearT, glm::vec3 P, glm::vec3 N)//, Vec2f UV = Vec2f(0.0f))
+    void SetValid(float NearT)
     {
         this->valid		= true;
         this->nearT		= NearT;
-        this->P			= P;
-        this->N			= N;
-        //this->UV		= UV;
     }
 
     void SetInvalid()
@@ -31,9 +28,6 @@ public:
         this->front		= true;
         this->nearT		= 0.0f;
         this->farT		= FLT_MAX;
-        this->P			= glm::vec3();
-        this->N			= glm::vec3();
-        //this->UV		= Vec2f(0.0f);
     }
 
     Intersection& operator = (const Intersection& Other)
@@ -42,9 +36,6 @@ public:
         this->front			= Other.front;
         this->nearT			= Other.nearT;
         this->farT			= Other.farT;
-        this->P				= Other.P;
-        this->N				= Other.N;
-        //this->UV			= Other.UV;
 
         return *this;
     }
@@ -53,9 +44,6 @@ public:
     bool	front;
     float	nearT;
     float	farT;
-    glm::vec3	P;
-    glm::vec3	N;
-    //Vec2f	UV;
 };
 
 class BoundingBox

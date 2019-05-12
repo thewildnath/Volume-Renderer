@@ -66,20 +66,6 @@ void BoundingBox::getIntersection(Ray const& ray, Intersection &intersection) co
         return;
 
     intersection.valid	= true;
-    /*
-    intersection.P  = ray.origin + ray.dir * intersection.nearT;//R(intersection.nearT);
-    intersection.N  = glm::vec3(0.0f);
-    //intersection.UV = Vec2f(0.0f, 0.0f);
-
-    for (int i = 0; i < 3; i++)
-    {
-        if (intersection.P[i] <= this->min[i] + 0.0001f)
-            intersection.N[i] = -1.0f;
-
-        if (intersection.P[i] >= this->max[i] - 0.0001f)
-            intersection.N[i] = 1.0f;
-    }
-    */
 }
 
 }

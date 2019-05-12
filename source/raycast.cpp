@@ -174,7 +174,7 @@ ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Settings const& 
         }
 
         // Cast ray inside node
-//*
+/*
         float maxOpacity = 0.0f;
         for (int i = 0; i < (int)settings.maxOpacity.size(); ++i)
         {
@@ -185,7 +185,7 @@ ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Settings const& 
         }
 //*/
         float invMaxOpacity = 1.0f;// / maxOpacity;
-        float invMaxOpacityDensity = invMaxOpacity / settings.densityScale;
+        //float invMaxOpacityDensity = invMaxOpacity / settings.densityScale;
 
         while (minT <= maxT)
         {
