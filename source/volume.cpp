@@ -6,8 +6,6 @@
 
 namespace scg
 {
-// Extern
-//Settings settings;
 
 float eps = 2;
 
@@ -21,7 +19,7 @@ Volume::Volume(int height, int width, int depth):
     );
 }
 
-void buildOctree(Volume const& volume, Octree &octree, int levels)
+void buildOctree(Volume const& volume, Octree &octree, int levels, Settings const& settings)
 {
     BoundingBox &bb = octree.bb;
 
@@ -56,42 +54,42 @@ void buildOctree(Volume const& volume, Octree &octree, int levels)
     octree.nodes[0] = new Octree(
         BoundingBox(glm::vec3(bb.min.x, bb.min.y, bb.min.z), glm::vec3(bb.mid.x, bb.mid.y, bb.mid.z))
     );
-    buildOctree(volume, *octree.nodes[0], levels - 1);
+    buildOctree(volume, *octree.nodes[0], levels - 1, settings);
     // 001
     octree.nodes[1] = new Octree(
         BoundingBox(glm::vec3(bb.min.x, bb.min.y, bb.mid.z), glm::vec3(bb.mid.x, bb.mid.y, bb.max.z))
     );
-    buildOctree(volume, *octree.nodes[1], levels - 1);
+    buildOctree(volume, *octree.nodes[1], levels - 1, settings);
     // 010
     octree.nodes[2] = new Octree(
         BoundingBox(glm::vec3(bb.min.x, bb.mid.y, bb.min.z), glm::vec3(bb.mid.x, bb.max.y, bb.mid.z))
     );
-    buildOctree(volume, *octree.nodes[2], levels - 1);
+    buildOctree(volume, *octree.nodes[2], levels - 1, settings);
     // 011
     octree.nodes[3] = new Octree(
         BoundingBox(glm::vec3(bb.min.x, bb.mid.y, bb.mid.z), glm::vec3(bb.mid.x, bb.max.y, bb.max.z))
     );
-    buildOctree(volume, *octree.nodes[3], levels - 1);
+    buildOctree(volume, *octree.nodes[3], levels - 1, settings);
     // 100
     octree.nodes[4] = new Octree(
         BoundingBox(glm::vec3(bb.mid.x, bb.min.y, bb.min.z), glm::vec3(bb.max.x, bb.mid.y, bb.mid.z))
     );
-    buildOctree(volume, *octree.nodes[4], levels - 1);
+    buildOctree(volume, *octree.nodes[4], levels - 1, settings);
     // 101
     octree.nodes[5] = new Octree(
         BoundingBox(glm::vec3(bb.mid.x, bb.min.y, bb.mid.z), glm::vec3(bb.max.x, bb.mid.y, bb.max.z))
     );
-    buildOctree(volume, *octree.nodes[5], levels - 1);
+    buildOctree(volume, *octree.nodes[5], levels - 1, settings);
     // 110
     octree.nodes[6] = new Octree(
         BoundingBox(glm::vec3(bb.mid.x, bb.mid.y, bb.min.z), glm::vec3(bb.max.x, bb.max.y, bb.mid.z))
     );
-    buildOctree(volume, *octree.nodes[6], levels - 1);
+    buildOctree(volume, *octree.nodes[6], levels - 1, settings);
     // 111
     octree.nodes[7] = new Octree(
         BoundingBox(glm::vec3(bb.mid.x, bb.mid.y, bb.mid.z), glm::vec3(bb.max.x, bb.max.y, bb.max.z))
     );
-    buildOctree(volume, *octree.nodes[7], levels - 1);
+    buildOctree(volume, *octree.nodes[7], levels - 1, settings);
 
     int maskAll = octree.nodes[0]->mask;
     for (int i = 0; i < 8; ++i)

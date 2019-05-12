@@ -27,7 +27,7 @@ inline glm::vec3 getNormal(scg::Volume const &volume, glm::vec3 const &pos, floa
         sampleVolume(volume, pos + deltaZ) - sampleVolume(volume, pos - deltaZ));
 }
 
-glm::vec3 castRay(Volume const& volume, Ray const& ray)
+glm::vec3 castRay(Volume const& volume, Ray const& ray, Settings const& settings)
 {
     //glm::vec3 pos;
     glm::vec3 color(0, 0, 0);
@@ -98,7 +98,7 @@ struct State
     }
 };
 
-glm::vec3 castRayFast(Volume const& volume, Ray ray)
+glm::vec3 castRayFast(Volume const& volume, Ray ray, Settings const& settings)
 {
     glm::vec3 color(0, 0, 0);
     float intensity = 1;
@@ -253,7 +253,7 @@ public:
         isTrue(isTrue), t(t) {};
 };
 
-ScatterEvent castRayWoodcock(Volume const& volume, Ray const& ray, Sampler &sampler)
+ScatterEvent castRayWoodcock(Volume const& volume, Ray const& ray, Settings const& settings, Sampler &sampler)
 {
     ScatterEvent scatterEvent;
 
@@ -295,7 +295,7 @@ ScatterEvent castRayWoodcock(Volume const& volume, Ray const& ray, Sampler &samp
     return scatterEvent;
 }
 
-ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Sampler &sampler)
+ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Settings const& settings, Sampler &sampler)
 {
     ScatterEvent scatterEvent;
 
@@ -418,7 +418,7 @@ ScatterEvent castRayWoodcockFast(Volume const& volume, Ray ray, Sampler &sampler
     return scatterEvent;
 }
 
-ScatterEvent castRayWoodcock3(Volume const& volume, Ray const& ray, Sampler &sampler)
+ScatterEvent castRayWoodcock3(Volume const& volume, Ray const& ray, Settings const& settings, Sampler &sampler)
 {
     ScatterEvent scatterEvent;
 
@@ -467,9 +467,9 @@ ScatterEvent castRayWoodcock3(Volume const& volume, Ray const& ray, Sampler &sam
     return scatterEvent;
 }
 
-glm::vec3 singleScatter(Volume const& volume, Ray const& ray, int type, Sampler &sampler)
+glm::vec3 singleScatter(Volume const& volume, Ray const& ray, int type, Settings const& settings, Sampler &sampler)
 {
-    ScatterEvent scatterEvent = (type == 1) ? castRayWoodcock(volume, ray, sampler) : castRayWoodcockFast(volume, ray, sampler);
+    ScatterEvent scatterEvent = (type == 1) ? castRayWoodcock(volume, ray, settings, sampler) : castRayWoodcockFast(volume, ray, settings, sampler);
 
     if (!scatterEvent.isTrue)
     {
@@ -490,7 +490,7 @@ glm::vec3 singleScatter(Volume const& volume, Ray const& ray, int type, Sampler 
     {
         Ray lightRay(pos, -settings.lightDir);
 
-        if (!((type == 1) ? castRayWoodcock(volume, lightRay, sampler).isTrue : castRayWoodcock(volume, lightRay, sampler).isTrue))
+        if (!((type == 1) ? castRayWoodcock(volume, lightRay, settings, sampler).isTrue : castRayWoodcock(volume, lightRay, settings, sampler).isTrue))
         {
             light = std::max(light, glm::dot(normal, settings.lightDir));
         }

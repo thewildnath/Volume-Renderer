@@ -50,8 +50,7 @@ int type = 3;
 
 scg::Sampler sampler[20];
 
-// Extern
-scg::Settings scg::settings;
+scg::Settings settings;
 
 int samples;
 glm::vec3 buffer[SCREEN_HEIGHT][SCREEN_WIDTH];
@@ -64,22 +63,21 @@ int main(int argc, char *argv[])
 
     // Load settings
     // TODO: move to class, add loader method from file
-    scg::settings.lightDir = glm::normalize(glm::vec3(1.0f, 0.5f, 1.0f));
-    scg::settings.stepSize = 0.1f;
-    scg::settings.stepSizeWoodcock = 1.0f;
-    scg::settings.df = 0.5f;
-    scg::settings.slice = 0;
-    scg::settings.octreeLevels = 5;
-    scg::settings.brackets = std::vector<float>{
+    settings.lightDir = glm::normalize(glm::vec3(1.0f, 0.5f, 1.0f));
+    settings.stepSize = 0.1f;
+    settings.stepSizeWoodcock = 1.0f;
+    settings.df = 0.5f;
+    settings.slice = 0;
+    settings.octreeLevels = 5;
+    settings.brackets = std::vector<float>{
         0, 1000, 1300, 1500, 1750, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2850, 3000, 3250, 3500, 99999 // 1 less than TF!
     };
-    scg::settings.maxOpacity.resize(scg::settings.brackets.size() - 1);
-    scg::settings.minStepSize.resize(scg::settings.brackets.size() - 1);
+    settings.maxOpacity.resize(settings.brackets.size() - 1);
+    settings.minStepSize.resize(settings.brackets.size() - 1);
     loadTransferFunction();
 
     // Load volume
     loadBrain(volume);
-    //loadHead(volume);
 
     // Start rendering
     while (Update())
@@ -133,15 +131,15 @@ void Draw(screen *screen)
 
             if (type == 1)
             {
-                color = scg::castRayFast(volume, ray) / gamma;
+                color = scg::castRayFast(volume, ray, settings) / gamma;
             }
             else if (type == 2)
             {
-                color = scg::singleScatter(volume, ray, 1, sampler[omp_get_thread_num()]);
+                color = scg::singleScatter(volume, ray, 1, settings, sampler[omp_get_thread_num()]);
             }
             else// if (type == 3)
             {
-                color = scg::singleScatter(volume, ray, 2, sampler[omp_get_thread_num()]);
+                color = scg::singleScatter(volume, ray, 2, settings, sampler[omp_get_thread_num()]);
             }
 
             buffer[y][x] += color * gamma;
@@ -205,11 +203,11 @@ bool Update()
                     InitialiseBuffer();
                     break;
                 case SDLK_LEFTBRACKET:
-                    scg::settings.slice += 2;
+                    settings.slice += 2;
                     InitialiseBuffer();
                     break;
                 case SDLK_RIGHTBRACKET:
-                    scg::settings.slice -= 2;
+                    settings.slice -= 2;
                     InitialiseBuffer();
                     break;
                 case SDLK_r:
@@ -246,39 +244,39 @@ void loadTransferFunction()
 
     float x, a, r, g, b;
 
-    fin >> scg::settings.densityScale;
+    fin >> settings.densityScale;
 
     while (fin >> x >> a >> r >> g >> b)
     {
         nodes.emplace_back(scg::Node{x, a, {r, g, b}});
     }
 
-    scg::settings.transferFunction = scg::TransferFunction(nodes);
+    settings.transferFunction = scg::TransferFunction(nodes);
 //*
-    for (int i = 0; i < (int)scg::settings.minStepSize.size(); ++i)
+    for (int i = 0; i < (int)settings.minStepSize.size(); ++i)
     {
-        scg::settings.maxOpacity[i] = 0;
-        scg::settings.minStepSize[i] = 0;
+        settings.maxOpacity[i] = 0;
+        settings.minStepSize[i] = 0;
     }
 //*/
-    scg::settings.mask = 0;
+    settings.mask = 0;
     for (size_t i = 0; i < nodes.size() - 1; ++i)
     {
         if (nodes[i].opacity > 0 || nodes[i + 1].opacity > 0)
         {
-            for (int bracket = 0; bracket < (int)scg::settings.brackets.size() - 1; ++bracket)
+            for (int bracket = 0; bracket < (int)settings.brackets.size() - 1; ++bracket)
             {
-                float minX = std::fmaxf(nodes[i].intensity, scg::settings.brackets[bracket]);
-                float maxX = std::fminf(nodes[i + 1].intensity, scg::settings.brackets[bracket + 1]);
+                float minX = std::fmaxf(nodes[i].intensity, settings.brackets[bracket]);
+                float maxX = std::fminf(nodes[i + 1].intensity, settings.brackets[bracket + 1]);
 
                 if (minX < maxX)
                 {
-                    scg::settings.mask |= (1 << bracket);
+                    settings.mask |= (1 << bracket);
                     //*
-                    float maxOpacity = std::fmaxf(scg::settings.transferFunction.evaluate(minX).w, scg::settings.transferFunction.evaluate(maxX).w);
-                    if (maxOpacity > scg::settings.maxOpacity[bracket])
+                    float maxOpacity = std::fmaxf(settings.transferFunction.evaluate(minX).w, settings.transferFunction.evaluate(maxX).w);
+                    if (maxOpacity > settings.maxOpacity[bracket])
                     {
-                        scg::settings.maxOpacity[bracket] = maxOpacity;
+                        settings.maxOpacity[bracket] = maxOpacity;
                     }
                     //*/
                 }
@@ -286,10 +284,10 @@ void loadTransferFunction()
         }
     }
 //*
-    for (int i = 0; i < (int)scg::settings.minStepSize.size(); ++i)
+    for (int i = 0; i < (int)settings.minStepSize.size(); ++i)
     {
-        scg::settings.minStepSize[i] =
-            1.0f * scg::settings.maxOpacity[i] + 0.1f * (1 - scg::settings.maxOpacity[i]);
+        settings.minStepSize[i] =
+            1.0f * settings.maxOpacity[i] + 0.1f * (1 - settings.maxOpacity[i]);
     }
 //*/
 }
@@ -338,56 +336,7 @@ void loadBrain(scg::Volume& volume)
         }
     }
 
-    buildOctree(volume, volume.octree, scg::settings.octreeLevels);
-
-    std::cout << "done" << std::endl;
-}
-
-void loadHead(scg::Volume& volume)
-{
-    char filename[50] = "../data/StanfordHead/cthead-16bit001.tif";
-    for (int x = 0; x < 99; ++x)
-    {
-        sprintf(filename + 33, "%03d.tif", x + 1);
-        std::cout << "Loading: " << filename << std::endl;
-
-        TinyTIFFReaderFile* tiffr = TinyTIFFReader_open(filename);
-        if (!tiffr)
-        {
-            std::cout<<"ERROR reading (not existent, not accessible or no TIFF file)\n";
-        }
-        else
-        {
-            int width = TinyTIFFReader_getWidth(tiffr);
-            int height = TinyTIFFReader_getHeight(tiffr);
-            uint16_t* image = (uint16_t*)calloc((size_t)width * height, sizeof(uint16_t));
-            TinyTIFFReader_getSampleData(tiffr, image, 0);
-
-            for (int y = 0; y < height; ++y)
-            {
-                for (int z = 0; z < width; ++z)
-                {
-                    temp.data[z][y][x] = image[y * width + z];
-                }
-            }
-
-            free(image);
-        }
-        TinyTIFFReader_close(tiffr);
-    }
-
-    for (int x = 0; x < volume.width; ++x)
-    {
-        for (int y = 0; y < volume.height; ++y)
-        {
-            for (int z = 0; z < volume.height; ++z)
-            {
-                volume.data[z][y][x] = (int)std::round(scg::sampleVolume(temp, glm::vec3(z, y, x / 2.0f)));
-            }
-        }
-    }
-
-    buildOctree(volume, volume.octree, scg::settings.octreeLevels);
+    buildOctree(volume, volume.octree, settings.octreeLevels, settings);
 
     std::cout << "done" << std::endl;
 }

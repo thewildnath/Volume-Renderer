@@ -35,8 +35,6 @@ public:
     int mask;
 };
 
-extern Settings settings;
-
 }
 
 #endif //RAYTRACER_SETTINGS_H

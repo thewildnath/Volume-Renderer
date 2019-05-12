@@ -15,13 +15,13 @@ namespace scg
 
 inline float sampleVolume(scg::Volume const &volume, glm::vec3 const &pos)
 {
-    int px = (int)(pos.x - settings.df);
-    int py = (int)(pos.y - settings.df);
-    int pz = (int)(pos.z - settings.df);
+    int px = (int)(pos.x - 0.5f);
+    int py = (int)(pos.y - 0.5f);
+    int pz = (int)(pos.z - 0.5f);
 
-    float dx = pos.x - px - settings.df;
-    float dy = pos.y - py - settings.df;
-    float dz = pos.z - pz - settings.df;
+    float dx = pos.x - px - 0.5f;
+    float dy = pos.y - py - 0.5f;
+    float dz = pos.z - pz - 0.5f;
 
     float c000 = volume.data[px][py][pz];
     float c001 = volume.data[px][py][pz + 1];
@@ -45,11 +45,11 @@ inline float sampleVolume(scg::Volume const &volume, glm::vec3 const &pos)
     return coef;
 }
 
-glm::vec3 castRay(Volume const&, Ray const&);
+glm::vec3 castRay(Volume const&, Ray const&, Settings const& settings);
 
-glm::vec3 castRayFast(Volume const&, Ray);
+glm::vec3 castRayFast(Volume const&, Ray, Settings const& settings);
 
-glm::vec3 singleScatter(Volume const&, Ray const&, int type, Sampler &sampler);
+glm::vec3 singleScatter(Volume const&, Ray const&, int type, Settings const& settings, Sampler &sampler);
 
 }
 
