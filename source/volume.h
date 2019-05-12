@@ -53,6 +53,18 @@ public:
 
         return coef;
     }
+
+    inline glm::vec3 getNormal(glm::vec3 const &pos, float eps) const
+    {
+        glm::vec3 deltaX(eps, 0, 0);
+        glm::vec3 deltaY(0, eps, 0);
+        glm::vec3 deltaZ(0, 0, eps);
+
+        return glm::vec3(
+            sampleVolume(pos + deltaX) - sampleVolume(pos - deltaX),
+            sampleVolume(pos + deltaY) - sampleVolume(pos - deltaY),
+            sampleVolume(pos + deltaZ) - sampleVolume(pos - deltaZ));
+    }
 };
 
 void buildOctree(Volume const& volume, Octree &octree, int levels, Settings const& settings);

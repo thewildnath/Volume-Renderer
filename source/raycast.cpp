@@ -15,18 +15,6 @@
 namespace scg
 {
 
-inline glm::vec3 getNormal(scg::Volume const &volume, glm::vec3 const &pos, float eps)
-{
-    glm::vec3 deltaX(eps, 0, 0);
-    glm::vec3 deltaY(0, eps, 0);
-    glm::vec3 deltaZ(0, 0, eps);
-
-    return glm::vec3(
-        volume.sampleVolume(pos + deltaX) - volume.sampleVolume(pos - deltaX),
-        volume.sampleVolume(pos + deltaY) - volume.sampleVolume(pos - deltaY),
-        volume.sampleVolume(pos + deltaZ) - volume.sampleVolume(pos - deltaZ));
-}
-
 glm::vec3 castRay(Volume const& volume, Ray const& ray, Settings const& settings)
 {
     //glm::vec3 pos;
@@ -60,7 +48,7 @@ glm::vec3 castRay(Volume const& volume, Ray const& ray, Settings const& settings
 
         if (out.w)
         {
-            glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));
+            glm::vec3 normal = glm::normalize(volume.getNormal(pos, 0.5f));
 
             float newIntensity = intensity * std::exp(-out.w * stepSize);
 
@@ -206,7 +194,7 @@ glm::vec3 castRayFast(Volume const& volume, Ray ray, Settings const& settings)
 
             if (out.w)
             {
-                glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));
+                glm::vec3 normal = glm::normalize(volume.getNormal(pos, 0.5f));
 
                 float newIntensity = intensity * std::exp(-out.w * settings.densityScale * stepSize * 1.0f);
 
@@ -429,7 +417,7 @@ glm::vec3 singleScatter(Volume const& volume, Ray const& ray, int type, Settings
 
     glm::vec3 pos = ray(scatterEvent.t);
 
-    glm::vec3 normal = glm::normalize(getNormal(volume, pos, 0.5f));
+    glm::vec3 normal = glm::normalize(volume.getNormal(pos, 0.5f));
 
     float coef = volume.sampleVolume(pos);
 

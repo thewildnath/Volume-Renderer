@@ -64,7 +64,6 @@ int main(int argc, char *argv[])
     settings.lightDir = glm::normalize(glm::vec3(1.0f, 0.5f, 1.0f));
     settings.stepSize = 0.1f;
     settings.stepSizeWoodcock = 1.0f;
-    settings.df = 0.5f;
     settings.slice = 0;
     settings.octreeLevels = 5;
     settings.brackets = std::vector<float>{

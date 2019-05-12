@@ -22,6 +22,7 @@ public:
     glm::vec3 colour;
 
     friend class TransferFunction;
+
 public:
     Node(float intensity, float opacity, glm::vec3 const& colour):
         intensity(intensity), opacity(opacity), colour(colour) {};

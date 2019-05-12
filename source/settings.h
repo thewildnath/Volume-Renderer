@@ -18,7 +18,6 @@ public:
 
     float stepSize;
     float stepSizeWoodcock;
-    float df;
 
     float densityScale;
 
